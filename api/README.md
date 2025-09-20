@@ -1,7 +1,21 @@
-- Base path: https://thebiaslens.onrender.com
-- Endpoints to implement today:
-  - GET /health → returns { status: "ok" }
-  - GET /search?q=… → returns a list of normalized articles with fields:
-    title, source, publishedAt, url, and either body or extractStatus
-  - POST /extract with { url } → returns { body, extractStatus }
-- Notes: rate limits and caching will be added later.
+# API Server
+
+## Installation
+
+```bash
+pip install -r requirements.txt
+```
+
+## Run Commands
+
+### Local Development
+
+```bash
+uvicorn api.main:app --reload
+```
+
+### Production Deploy
+
+```bash
+uvicorn api.main:app --host 0.0.0.0 --port $PORT
+```
