@@ -1,11 +1,8 @@
-export async function get<T>(
-  path: string,
-  params?: Record<string, string>
-): Promise<T> {
-  const baseUrl = process.env.REACT_APP_API_BASE_URL;
+export async function get<T>(path: string, params?: Record<string, string>): Promise<T> {
+  const baseUrl = process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8000';
 
   if (!baseUrl) {
-    throw new Error("REACT_APP_API_BASE_URL environment variable is not set");
+    throw new Error('REACT_APP_API_BASE_URL environment variable is not set');
   }
 
   let url = `${baseUrl}${path}`;
