@@ -1,13 +1,13 @@
-import React from "react";
-import "./App.css";
+import React from 'react';
+import './App.css';
 
-import { Routes, Route } from "react-router-dom";
-import Analyze from "./routes/Analyze";
-import Recents from "./routes/Recents";
-import Settings from "./routes/Settings";
-import Details from "./routes/Details";
-import Search from "./routes/Search";
-import Layout from "./components/Layout";
+import { Routes, Route } from 'react-router-dom';
+import Analyze from './routes/Analyze';
+import Recents from './routes/Recents';
+import Settings from './routes/Settings';
+import Details from './routes/Details';
+import Search from './routes/Search';
+import Layout from './components/Layout';
 
 function App() {
   return (
