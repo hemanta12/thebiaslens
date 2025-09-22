@@ -1,9 +1,35 @@
-# API Server
+# TheBiasLens API Server
+
+FastAPI backend for news search and analysis with configurable provider support.
+
+## Features
+
+- **News Search**: `/search` endpoint with pagination support
+- **Provider Abstraction**: Configurable news providers (NewsAPI implemented)
+- **Settings Management**: Pydantic-based configuration with environment variables
+- **Mock Data Fallback**: Automatic fallback when API keys not configured
+- **CORS Support**: Ready for frontend integration
 
 ## Installation
 
 ```bash
+# Install dependencies
 pip install -r requirements.txt
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env and add your NEWS_API_KEY
+```
+
+## Configuration
+
+Environment variables (`.env`):
+
+```env
+NEWS_PROVIDER=newsapi                    # News provider to use
+NEWS_API_BASE_URL=https://newsapi.org/v2 # NewsAPI base URL
+NEWS_API_KEY=                            # Your NewsAPI key (optional)
+DEFAULT_PAGE_SIZE=10                     # Default results per page
 ```
 
 ## Run Commands
@@ -11,11 +37,73 @@ pip install -r requirements.txt
 ### Local Development
 
 ```bash
-uvicorn api.main:app --reload
+uvicorn main:app --reload
 ```
+
+API will be available at `http://127.0.0.1:8000`
 
 ### Production Deploy
 
 ```bash
-uvicorn api.main:app --host 0.0.0.0 --port $PORT
+uvicorn main:app --host 0.0.0.0 --port $PORT
 ```
+
+## API Endpoints
+
+### GET `/health`
+
+Health check endpoint
+
+```json
+{
+  "status": "ok",
+  "service": "api",
+  "version": "0.0.1"
+}
+```
+
+### GET `/search`
+
+Search for news articles
+
+**Parameters:**
+
+- `q` (required): Search query string
+- `cursor` (optional): Page number for pagination (default: 1)
+- `pageSize` (optional): Results per page (default: from settings)
+
+**Response:**
+
+```json
+{
+  "items": [
+    {
+      "url": "https://example.com/article",
+      "source": "Source Name",
+      "publishedAt": "2025-09-22T10:00:00Z",
+      "title": "Article Title"
+    }
+  ],
+  "nextCursor": 2
+}
+```
+
+## Architecture
+
+```
+api/
+├── main.py              # FastAPI app and routes
+├── config.py            # Pydantic settings
+├── providers/           # News provider implementations
+│   ├── __init__.py
+│   └── newsapi.py       # NewsAPI provider
+├── data/                # Mock data for development
+└── requirements.txt     # Python dependencies
+```
+
+## Development
+
+- **Mock Mode**: When `NEWS_API_KEY` is not set, uses mock data
+- **Provider System**: Easy to add new news providers
+- **Type Safety**: Full typing with Pydantic models
+- **Error Handling**: Graceful fallbacks and error responses
