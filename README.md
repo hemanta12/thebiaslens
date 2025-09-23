@@ -1,21 +1,32 @@
 # TheBiasLens
 
-A web service that analyzes news content for political framing (Left/Center/Right), generates a short summary, and surfaces fact-check snippets with citations.
+A web service that analyzes news content for political framing, generates article summaries, and provides content extraction capabilities with bias detection potential.
 
 ## Overview
 
 TheBiasLens consists of two main components:
 
-- **API Server**: FastAPI backend with configurable news providers and search functionality
-- **Web App**: React + TypeScript frontend with responsive UI and paginated search
+- **API Server**: FastAPI backend with article extraction, summarization, and configurable news providers
+- **Web App**: React + TypeScript frontend with responsive UI, search functionality, and analysis tools
 
 ## Features
 
+### Current Features ✅
+
 - **News Search**: Search articles from multiple news providers (currently NewsAPI)
-- **Paginated Results**: Load more functionality for browsing large result sets
+- **Article Extraction**: Extract full article content from URLs using trafilatura
+- **Text Summarization**: Generate lead-3 summaries from extracted content
+- **Combined Analysis**: Single-endpoint analysis combining extraction and summarization
 - **Responsive Design**: Mobile-first UI with Material-UI components
-- **Provider Abstraction**: Configurable backend supporting multiple news APIs
-- **Real-time Updates**: Live search results with loading states
+- **Search to Analysis Flow**: Click "Analyze" buttons in search results to automatically extract and summarize articles
+- **Real-time Updates**: Live search results with loading states and error handling
+
+### Planned Features 🚧
+
+- **Bias Analysis**: Left/Center/Right political framing detection
+- **Fact-check Integration**: Surface fact-check snippets with citations
+- **User Preferences**: Saved searches and bookmarks
+- **Historical Analysis**: Track bias trends over time
 
 ## Quick Start
 
@@ -39,13 +50,28 @@ TheBiasLens consists of two main components:
    - Set `NEWS_API_KEY` in `api/.env` for live news data
    - Without API key, uses mock data for development
 
+## Usage Flow
+
+1. **Search for News**: Use the search interface to find articles on topics of interest
+2. **Analyze Articles**: Click "Analyze" buttons in search results to extract and summarize content
+3. **Review Results**: View extracted article metadata, content, and AI-generated summaries
+4. **Navigate Seamlessly**: Switch between search and analysis with automatic URL parameter handling
+
 ## Project Structure
 
 ```
 thebiaslens/
-├── api/           # FastAPI backend
-├── app/           # React frontend
-└── sprints/       # Development documentation
+├── api/                    # FastAPI backend
+│   ├── main.py            # API routes and app
+│   ├── config.py          # Configuration management
+│   ├── providers/         # News provider implementations
+│   └── data/              # Mock data for development
+├── app/thebiaslens/       # React frontend
+│   ├── src/components/    # Reusable UI components
+│   ├── src/hooks/         # Custom React hooks
+│   ├── src/routes/        # Page components
+│   └── src/api/           # API client utilities
+└── sprints/               # Development documentation
 ```
 
 ## Development Status
@@ -53,13 +79,23 @@ thebiaslens/
 ✅ **Completed Features**:
 
 - News search API with provider abstraction
-- Paginated search results
-- Responsive web interface
+- Article extraction with trafilatura integration
+- Lead-3 text summarization
+- Combined analysis endpoint
+- Responsive web interface with search and analysis
+- Navigation flow from search results to analysis page
+- URL parameter handling for direct analysis links
 - Mock data fallback for development
 
-🚧 **Planned Features**:
+🚧 **In Progress**:
 
-- Bias analysis (Left/Center/Right framing)
-- Article summaries
-- Fact-check integration
-- User preferences and history
+- Bias detection algorithms
+- Fact-checking integration
+- Enhanced UI/UX improvements
+
+🔮 **Future Plans**:
+
+- Multi-provider bias analysis
+- User authentication and preferences
+- Historical analysis and trending
+- Browser extension for real-time analysis
