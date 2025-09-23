@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 
 import { Routes, Route } from 'react-router-dom';
-import Analyze from './routes/Analyze';
+import AnalyzePage from './routes/AnalyzePage';
 import Recents from './routes/Recents';
 import Settings from './routes/Settings';
 import Details from './routes/Details';
@@ -16,7 +16,7 @@ function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Search />} />
-            <Route path="/analyze" element={<Analyze />} />
+            <Route path="/analyze" element={<AnalyzePage />} />
             <Route path="/recents" element={<Recents />} />
             <Route path="/settings" element={<Settings />} />
           </Route>

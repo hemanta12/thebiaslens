@@ -5,10 +5,12 @@ FastAPI backend for news search and analysis with configurable provider support.
 ## Features
 
 - **News Search**: `/search` endpoint with pagination support
+- **Article Extraction**: `GET /extract?url=` — fetch + extract article text with trafilatura; returns normalized shape
 - **Provider Abstraction**: Configurable news providers (NewsAPI implemented)
 - **Settings Management**: Pydantic-based configuration with environment variables
 - **Mock Data Fallback**: Automatic fallback when API keys not configured
 - **CORS Support**: Ready for frontend integration
+- **Caching**: In-memory 60s cache; will switch to Upstash TTL later
 
 ## Installation
 
@@ -87,6 +89,16 @@ Search for news articles
   "nextCursor": 2
 }
 ```
+
+### GET `/extract`
+
+Extract article content by URL.
+
+```
+GET /extract?url=<article-url>
+```
+
+Returns normalized shape with fields like `url`, `headline`, `source`, `publishedAt`, `author`, `body`, `wordCount`, `extractStatus`, and `paywalled`.
 
 ## Architecture
 
