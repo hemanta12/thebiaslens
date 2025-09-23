@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Button, Box, IconButton, Card, CardContent } from '@mui/material';
+import { Typography, Button, Box, IconButton, Card, CardContent, Chip } from '@mui/material';
 import { Analytics, OpenInNew } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { ArticleStub } from '../types/api';
@@ -53,9 +53,24 @@ const ResultItem: React.FC<ResultItemProps> = ({ item }) => {
         </Typography>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="caption" color="text.secondary">
-            {item.publishedAt && new Date(item.publishedAt).toLocaleDateString()}
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="caption" color="text.secondary">
+              {item.publishedAt && new Date(item.publishedAt).toLocaleDateString()}
+            </Typography>
+            {/* Bias pill - pending until classification is implemented */}
+            <Chip
+              label="Bias: pending"
+              size="small"
+              variant="outlined"
+              sx={{
+                fontSize: '0.6rem',
+                height: 20,
+                color: 'text.secondary',
+                borderColor: 'grey.300',
+                backgroundColor: 'grey.50',
+              }}
+            />
+          </Box>
           <Typography variant="caption" color="text.secondary">
             {item.source}
           </Typography>
