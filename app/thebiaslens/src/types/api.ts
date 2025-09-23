@@ -17,6 +17,7 @@ export type BiasResult = {
 
 export type ExtractResult = {
   url: string;
+  canonicalUrl?: string;
   headline?: string;
   source: string;
   publishedAt?: string;
@@ -35,6 +36,8 @@ export type SummaryResult = {
 };
 
 export type AnalyzeResult = {
+  id: string;
+  canonicalUrl: string;
   extract: ExtractResult;
   summary?: SummaryResult | null;
   bias?: BiasResult | null;

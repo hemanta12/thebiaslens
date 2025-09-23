@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Box, TextField, Button } from '@mui/material';
+import { Box, TextField, Button, IconButton, InputAdornment } from '@mui/material';
+import ClearIcon from '@mui/icons-material/Clear';
 
 interface UrlFormProps {
   onSubmit: (url: string) => void;
@@ -36,6 +37,15 @@ const UrlForm: React.FC<UrlFormProps> = ({ onSubmit, isLoading, value = '' }) =>
         placeholder="https://example.com/article"
         helperText="Enter a news article URL to extract and analyze"
         variant="outlined"
+        InputProps={{
+          endAdornment: url ? (
+            <InputAdornment position="end">
+              <IconButton aria-label="Clear URL" onClick={() => setUrl('')} size="small" edge="end">
+                <ClearIcon fontSize="small" />
+              </IconButton>
+            </InputAdornment>
+          ) : null,
+        }}
       />
       <Button
         type="submit"

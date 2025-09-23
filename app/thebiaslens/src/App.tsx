@@ -3,6 +3,7 @@ import './App.css';
 
 import { Routes, Route } from 'react-router-dom';
 import AnalyzePage from './routes/AnalyzePage';
+import AnalyzePageById from './routes/AnalyzePageById';
 import Recents from './routes/Recents';
 import Settings from './routes/Settings';
 import Details from './routes/Details';
@@ -17,6 +18,7 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<Search />} />
             <Route path="/analyze" element={<AnalyzePage />} />
+            <Route path="/analyze/:id" element={<AnalyzePageById />} />
             <Route path="/recents" element={<Recents />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
