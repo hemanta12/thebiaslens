@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { Box, TextField, Button, Chip, Typography, Container, Stack, Alert } from '@mui/material';
+import { Box, Chip, Typography, Container, Stack, Alert } from '@mui/material';
 import { useSearchPaged } from '../hooks/useSearchPaged';
 import EmptyState from '../components/EmptyState';
 import ResultSkeleton from '../components/ResultSkeleton';
 import ResultList from '../components/ResultList';
+import SearchBar from '../components/SearchBar';
 
 const Search = () => {
   const [query, setQuery] = useState('');
   const [submittedQuery, setSubmittedQuery] = useState('');
 
-  const { items, hasNext, loadMore, isLoading, isLoadingMore, error } =
-    useSearchPaged(submittedQuery);
+  const { items, isLoading, error } = useSearchPaged(submittedQuery);
 
   const exampleQueries = ['Climate change policies', 'Economic inequality', 'Healthcare reform'];
 
@@ -43,14 +43,7 @@ const Search = () => {
     }
 
     if (items && items.length > 0) {
-      return (
-        <ResultList
-          items={items}
-          onLoadMore={loadMore}
-          hasNext={hasNext}
-          isLoadingMore={isLoadingMore}
-        />
-      );
+      return <ResultList results={items} isLoading={isLoading} />;
     }
 
     // Show "no results" message when search returns empty results
@@ -83,22 +76,9 @@ const Search = () => {
   return (
     <Container maxWidth="md" sx={{ py: 3 }}>
       {/* Search Form */}
-      <Box component="form" onSubmit={handleSubmit} sx={{ mb: 3 }}>
+      <Box sx={{ mb: 3 }}>
         <Stack spacing={2}>
-          <TextField
-            fullWidth
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search for news topics..."
-            variant="outlined"
-            InputProps={{
-              endAdornment: (
-                <Button type="submit" variant="contained" sx={{ ml: 1 }} disabled={!query.trim()}>
-                  Search
-                </Button>
-              ),
-            }}
-          />
+          <SearchBar value={query} onChange={setQuery} onSubmit={handleSubmit} />
 
           {/* Example Chips */}
           <Box>

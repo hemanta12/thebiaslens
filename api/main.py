@@ -2,17 +2,25 @@
 
 # News API integration with configurable providers
 import re
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI, Query, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 from urllib.parse import urlparse
+from pydantic import BaseModel
+
+# Request models
+class SummarizeRequest(BaseModel):
+    text: str
+    maxSentences: Optional[int] = 3
+    maxChars: Optional[int] = 600
 
 # Load settings at module import
 from config import settings
 from providers.newsapi import search_news
 from data.mock_results import MOCK_ARTICLES
-from schemas import ExtractResult
+from schemas import ExtractResult, SummaryResult, AnalyzeResult
 from services.extract import extract_article
+from services.summarize import summarize_lead3
 from utils.normalize import canonicalize_url, infer_source_from_url
 
 app = FastAPI()
@@ -124,3 +132,90 @@ async def extract(url: str = Query(..., description="URL of the article to extra
     )
     
     return result
+
+
+@app.post("/summarize", response_model=SummaryResult)
+async def summarize(request: SummarizeRequest):
+    """
+    Summarize provided text with simple lead-3 algorithm.
+    
+    Args:
+        request: SummarizeRequest with text and optional max parameters
+        
+    Returns:
+        SummaryResult with sentences, joined text, and counts
+    """
+    text = request.text
+    
+    # Short text handling - just return the whole text as one sentence if very short
+    if len(text.strip()) < 200:
+        result = {
+            "sentences": [text.strip()],
+            "joined": text.strip(),
+            "charCount": len(text.strip()),
+            "wordCount": len(text.strip().split())
+        }
+        return SummaryResult(**result)
+    
+    # Standard case - run summarize_lead3
+    summary = summarize_lead3(
+        text=text,
+        max_sentences=request.maxSentences,
+        max_chars=request.maxChars
+    )
+    
+    return SummaryResult(**summary)
+
+
+@app.get("/analyze/url", response_model=AnalyzeResult)
+async def analyze_url(url: str = Query(..., description="URL of the article to analyze")):
+    """
+    Extract and summarize article content from a given URL.
+    
+    Args:
+        url: The URL of the article to extract and summarize (required)
+        
+    Returns:
+        AnalyzeResult with extraction and optional summary
+    """
+    # Basic URL validation
+    try:
+        parsed = urlparse(url)
+        if not parsed.scheme or not parsed.netloc:
+            raise HTTPException(status_code=400, detail="Invalid URL format")
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid URL format")
+    
+    # Canonicalize URL
+    canonical_url = canonicalize_url(url)
+    
+    # Extract article content (reusing the extraction logic)
+    headline, body, word_count, status, author, published_at, paywalled = await extract_article(canonical_url)
+    
+    # Infer source from URL
+    source = infer_source_from_url(canonical_url)
+    
+    # Build ExtractResult
+    extract_result = ExtractResult(
+        url=canonical_url,
+        headline=headline,
+        source=source,
+        publishedAt=published_at,
+        author=author,
+        body=body,
+        wordCount=word_count,
+        extractStatus=status,
+        paywalled=paywalled,
+    )
+    
+    # Create summary if body is available
+    summary_result = None
+    if body:
+        summary_data = summarize_lead3(body)
+        summary_result = SummaryResult(**summary_data)
+    
+    # Return combined result
+    return AnalyzeResult(
+        extract=extract_result,
+        summary=summary_result
+    )
