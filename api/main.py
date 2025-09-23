@@ -79,7 +79,7 @@ def search(
         # TODO: add provider switch if we add GNews later
         return search_news(q, page=cursor, page_size=pageSize)
     else:
-        # Fallback to mock data (unchanged from original implementation)
+        # Fallback to mock data 
         query_lower = q.lower()
         filtered_articles = [
             article for article in MOCK_ARTICLES
@@ -217,5 +217,6 @@ async def analyze_url(url: str = Query(..., description="URL of the article to a
     # Return combined result
     return AnalyzeResult(
         extract=extract_result,
-        summary=summary_result
+        summary=summary_result,
+        bias=None
     )

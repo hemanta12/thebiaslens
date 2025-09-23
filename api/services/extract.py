@@ -182,7 +182,7 @@ def _normalize_author(val: Optional[str]) -> Optional[str]:
     if not v:
         return None
     # If it's a URL to a profile, try to convert the slug to title case
-    if v.startswith('http'):  # e.g., https://www.theguardian.com/profile/coral-murphy-marcos
+    if v.startswith('http'):  
         try:
             from urllib.parse import urlparse
             path = urlparse(v).path.strip('/')
@@ -192,7 +192,7 @@ def _normalize_author(val: Optional[str]) -> Optional[str]:
                 return ' '.join(w.capitalize() for w in name.split())
         except Exception:
             pass
-        return None  # avoid showing raw URL as author
+        return None  
     # Drop emails to just the local-part
     if '@' in v and ' ' not in v:
         v = v.split('@')[0].replace('.', ' ')
@@ -267,7 +267,7 @@ async def extract_article(url: str) -> Tuple[Optional[str], Optional[str], int, 
     # Fallback: try common meta tags for author and date
     try:
         def _find_meta_content(names: Tuple[str, ...]) -> Optional[str]:
-            # Matches e.g., <meta name="author" content="..."> or <meta property='article:published_time' content='...'>
+           
             pattern = r"<meta[^>]+(?:name|property)=[\'\"](?:" + "|".join(map(re.escape, names)) + r")[\'\"][^>]*content=[\'\"](.*?)[\'\"][^>]*>"
             m = re.search(pattern, html, re.IGNORECASE | re.DOTALL)
             return unescape(m.group(1).strip()) if m else None

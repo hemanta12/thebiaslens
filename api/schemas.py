@@ -1,6 +1,22 @@
 from pydantic import BaseModel
 from typing import Optional, Literal, List
 from datetime import datetime
+from enum import Enum
+
+
+class BiasLabel(str, Enum):
+    """Political bias labels."""
+    LEFT = "Left"
+    NEUTRAL = "Neutral"
+    RIGHT = "Right"
+
+
+class BiasResult(BaseModel):
+    """Bias analysis result."""
+    label: BiasLabel
+    confidence: float  # [0..1]
+    score: float  # [-1..1] where -1 left, 0 neutral, +1 right
+    calibrationVersion: str = "v1"
 
 
 class ArticleStub(BaseModel):
@@ -37,3 +53,4 @@ class AnalyzeResult(BaseModel):
     """Combined extraction and summary result."""
     extract: ExtractResult
     summary: Optional[SummaryResult] = None
+    bias: Optional[BiasResult] = None

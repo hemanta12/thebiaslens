@@ -283,3 +283,14 @@ api/
 - **Rate Limiting**: Request throttling and quotas
 - **Authentication**: API key management for different usage tiers
 - **Webhooks**: Real-time notifications for analysis completion
+
+## Bias Analysis
+
+### Bias Labels and Scoring
+
+- **Three Labels Only**: "Left", "Neutral", "Right"
+- **Score Range**: -1 to 1 (where -1 = left, 0 = neutral, +1 = right)
+- **Suggested Thresholds for Later**:
+  - Left: score <= -0.2
+  - Neutral: -0.2 < score < 0.2
+  - Right: score >= 0.2
