@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, TextField, Button, Chip, Typography, Container, Stack, Alert } from '@mui/material';
-import { useSearch } from '../hooks/useSearch';
+import { useSearchPaged } from '../hooks/useSearchPaged';
 import EmptyState from '../components/EmptyState';
 import ResultSkeleton from '../components/ResultSkeleton';
 import ResultList from '../components/ResultList';
@@ -9,7 +9,8 @@ const Search = () => {
   const [query, setQuery] = useState('');
   const [submittedQuery, setSubmittedQuery] = useState('');
 
-  const { data, isLoading, error } = useSearch(submittedQuery);
+  const { items, hasNext, loadMore, isLoading, isLoadingMore, error } =
+    useSearchPaged(submittedQuery);
 
   const exampleQueries = ['Climate change policies', 'Economic inequality', 'Healthcare reform'];
 
@@ -29,7 +30,7 @@ const Search = () => {
       return <EmptyState />;
     }
 
-    if (isLoading) {
+    if (isLoading && (!items || items.length === 0)) {
       return <ResultSkeleton />;
     }
 
@@ -41,12 +42,19 @@ const Search = () => {
       );
     }
 
-    if (data?.items && data.items.length > 0) {
-      return <ResultList items={data.items} />;
+    if (items && items.length > 0) {
+      return (
+        <ResultList
+          items={items}
+          onLoadMore={loadMore}
+          hasNext={hasNext}
+          isLoadingMore={isLoadingMore}
+        />
+      );
     }
 
     // Show "no results" message when search returns empty results
-    if (data?.items && data.items.length === 0) {
+    if (items && items.length === 0) {
       return (
         <Box
           sx={{
