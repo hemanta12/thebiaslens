@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Stack, Typography, Chip } from '@mui/material';
+import { Stack, Typography, Chip } from '@mui/material';
 import { Public } from '@mui/icons-material';
 import { ExtractResult } from '../../types/api';
 
@@ -19,8 +19,8 @@ const ArticleMetadata: React.FC<ArticleMetadataProps> = ({ result, formatDate })
           gutterBottom
           sx={{
             fontWeight: 600,
-            lineHeight: 1.3,
-            mb: 3,
+            lineHeight: 1.1,
+            mb: 1,
             color: 'text.primary',
           }}
         >
@@ -31,9 +31,21 @@ const ArticleMetadata: React.FC<ArticleMetadataProps> = ({ result, formatDate })
           Title not available
         </Typography>
       )}
-
-      {/* Source/Website Name - Second */}
-      <Box sx={{ mb: 3 }}>
+      {/* Source and Metadata Row - Combined */}
+      <Stack
+        direction="row"
+        spacing={2}
+        alignItems="center"
+        sx={{
+          mb: 1,
+          py: 2,
+          backgroundColor: 'grey.50',
+          borderRadius: 1,
+          border: '1px solid',
+          borderColor: 'grey.200',
+        }}
+      >
+        {/* Source chip on the left */}
         <Chip
           icon={<Public />}
           label={result.source}
@@ -44,22 +56,8 @@ const ArticleMetadata: React.FC<ArticleMetadataProps> = ({ result, formatDate })
             fontWeight: 600,
           }}
         />
-      </Box>
 
-      {/* Metadata Row - Third */}
-      <Stack
-        direction="row"
-        spacing={2}
-        alignItems="center"
-        sx={{
-          mb: 3,
-          p: 2,
-          backgroundColor: 'grey.50',
-          borderRadius: 1,
-          border: '1px solid',
-          borderColor: 'grey.200',
-        }}
-      >
+        {/* Metadata items on the right */}
         {result.publishedAt && (
           <Typography variant="body2" color="text.secondary">
             📅 {formatDate(result.publishedAt)}

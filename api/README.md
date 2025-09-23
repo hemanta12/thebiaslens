@@ -9,7 +9,8 @@ FastAPI backend for news search, article extraction, and content analysis with c
 - **News Search**: `/search` endpoint with pagination support and provider abstraction
 - **Article Extraction**: `GET /extract?url=` — fetch and extract full article text with trafilatura
 - **Text Summarization**: `POST /summarize` — create lead-3 summaries from article text
-- **Combined Analysis**: `GET /analyze/url` — extract and summarize in a single request
+- **Combined Analysis**: `GET /analyze/url` — extract, summarize, and perform bias analysis in a single request
+- **Bias Analysis**: Schema support for Left/Neutral/Right political framing with confidence scores
 - **Health Check**: `/health` — service status and version information
 
 ### Technical Features
@@ -214,7 +215,7 @@ GET /analyze/url?url=https://example.com/news-article
 
 ```json
 {
-  "extractResult": {
+  "extract": {
     "url": "https://example.com/news-article",
     "headline": "Article Headline",
     "source": "Source Name",
@@ -222,11 +223,17 @@ GET /analyze/url?url=https://example.com/news-article
     "wordCount": 1250,
     "extractStatus": "extracted"
   },
-  "summarizeResult": {
+  "summary": {
     "sentences": ["Key sentence 1.", "Key sentence 2.", "Key sentence 3."],
     "joined": "Key sentence 1. Key sentence 2. Key sentence 3.",
     "charCount": 156,
     "wordCount": 28
+  },
+  "bias": {
+    "label": "Neutral",
+    "confidence": 0.82,
+    "score": 0.05,
+    "calibrationVersion": "v1"
   }
 }
 ```
@@ -273,13 +280,32 @@ api/
 3. **Testing**: Use mock mode by omitting API keys
 4. **Production**: Configure all environment variables and use production ASGI server
 
-## Future Enhancements
+## Current Features and Future Enhancements
+
+✅ **Implemented Features**:
+
+- **Bias Analysis Schema**: Complete Pydantic models for bias detection results
+- **Combined Analysis Endpoint**: Ready for ML model integration
+- **Score Standardization**: Normalized -1 to 1 scoring system
 
 🚧 **Planned Features**:
 
-- **Bias Detection**: ML-powered political framing analysis
+- **Bias ML Model**: Political framing analysis model implementation
 - **Fact-Checking**: Integration with fact-checking services
 - **Advanced Caching**: Redis/Upstash for distributed caching
 - **Rate Limiting**: Request throttling and quotas
 - **Authentication**: API key management for different usage tiers
 - **Webhooks**: Real-time notifications for analysis completion
+
+## Bias Analysis
+
+### Bias Labels and Scoring
+
+- **Three Labels Only**: "Left", "Neutral", "Right" (implemented as enum)
+- **Score Range**: -1 to 1 (where -1 = left, 0 = neutral, +1 = right)
+- **Confidence Level**: 0 to 1 score indicating certainty of classification
+- **Calibration Versioning**: Support for model version tracking
+- **Suggested Thresholds**:
+  - Left: score <= -0.2
+  - Neutral: -0.2 < score < 0.2
+  - Right: score >= 0.2

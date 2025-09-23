@@ -1,33 +1,14 @@
 import React from 'react';
 import { Card, CardContent, Alert } from '@mui/material';
-import { ExtractResult, SummaryResult } from '../../types/api';
+import { ExtractResult } from '../../types/api';
 import ArticleMetadata from './ArticleMetadata';
-import SummarySection from './SummarySection';
-import ArticleTextSection from './ArticleTextSection';
 
 interface ExtractResultCardProps {
   result: ExtractResult;
-  summaryResult?: SummaryResult;
-  isSummarizing: boolean;
-  summaryError: any;
-  showFullText: boolean;
-  onToggleText: () => void;
-  onRegenerate: () => void;
   formatDate: (dateString?: string) => string | null;
-  getPreviewText: (text: string, maxLength?: number) => string;
 }
 
-const ExtractResultCard: React.FC<ExtractResultCardProps> = ({
-  result,
-  summaryResult,
-  isSummarizing,
-  summaryError,
-  showFullText,
-  onToggleText,
-  onRegenerate,
-  formatDate,
-  getPreviewText,
-}) => {
+const ExtractResultCard: React.FC<ExtractResultCardProps> = ({ result, formatDate }) => {
   return (
     <Card sx={{ mt: 3, boxShadow: 2 }}>
       <CardContent sx={{ p: 3 }}>
@@ -40,25 +21,10 @@ const ExtractResultCard: React.FC<ExtractResultCardProps> = ({
           </Alert>
         )}
         {result.extractStatus !== 'extracted' && (
-          <Alert severity="info" sx={{ mb: 3 }}>
+          <Alert severity="info" sx={{ mb: 0 }}>
             Couldn't fetch full text. You can still proceed with summary later.
           </Alert>
         )}
-
-        <SummarySection
-          result={result}
-          summaryResult={summaryResult}
-          isSummarizing={isSummarizing}
-          summaryError={summaryError}
-          onRegenerate={onRegenerate}
-        />
-
-        <ArticleTextSection
-          result={result}
-          showFullText={showFullText}
-          onToggleText={onToggleText}
-          getPreviewText={getPreviewText}
-        />
       </CardContent>
     </Card>
   );

@@ -6,6 +6,15 @@ export type ArticleStub = {
   extractStatus?: 'api' | 'extracted' | 'missing';
 };
 
+export type BiasLabel = 'Left' | 'Neutral' | 'Right';
+
+export type BiasResult = {
+  label: BiasLabel;
+  confidence: number; // [0..1]
+  score: number; // [-1..1] where -1 left, 0 neutral, +1 right
+  calibrationVersion: string;
+};
+
 export type ExtractResult = {
   url: string;
   headline?: string;
@@ -28,6 +37,7 @@ export type SummaryResult = {
 export type AnalyzeResult = {
   extract: ExtractResult;
   summary?: SummaryResult | null;
+  bias?: BiasResult | null;
 };
 
 export type Paged<T> = {
