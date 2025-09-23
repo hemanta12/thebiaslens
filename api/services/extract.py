@@ -8,6 +8,7 @@ import re
 import json
 
 from utils.normalize import canonicalize_url
+from urllib.parse import urljoin
 
 # In-memory cache for 60 seconds
 _cache: Dict[str, Dict[str, Any]] = {}
@@ -19,7 +20,7 @@ def _is_cache_valid(timestamp: float) -> bool:
     return time.time() - timestamp < _cache_ttl
 
 
-def _get_from_cache(canonical_url: str) -> Optional[Tuple[Optional[str], Optional[str], int, str, Optional[str], Optional[str], bool]]:
+def _get_from_cache(canonical_url: str) -> Optional[Tuple[Optional[str], Optional[str], int, str, Optional[str], Optional[str], bool, Optional[str]]]:
     """Get extraction result from cache if valid."""
     if canonical_url in _cache:
         entry = _cache[canonical_url]
@@ -32,6 +33,7 @@ def _get_from_cache(canonical_url: str) -> Optional[Tuple[Optional[str], Optiona
                 entry.get('author'),
                 entry.get('published_at'),
                 entry.get('paywalled', False),
+                entry.get('canonical_from_meta'),
             )
         else:
             # Remove expired entry
@@ -48,6 +50,7 @@ def _set_cache(
     author: Optional[str],
     published_at: Optional[str],
     paywalled: bool,
+    canonical_from_meta: Optional[str],
 ) -> None:
     """Store extraction result in cache."""
     _cache[canonical_url] = {
@@ -59,6 +62,7 @@ def _set_cache(
         'author': author,
         'published_at': published_at,
         'paywalled': paywalled,
+        'canonical_from_meta': canonical_from_meta,
     }
 
 
@@ -215,7 +219,7 @@ def _is_likely_paywalled(html: str, body: Optional[str], wc: int) -> bool:
     return any(c in hay for c in clues)
 
 
-async def extract_article(url: str) -> Tuple[Optional[str], Optional[str], int, str, Optional[str], Optional[str], bool]:
+async def extract_article(url: str) -> Tuple[Optional[str], Optional[str], int, str, Optional[str], Optional[str], bool, Optional[str]]:
     """
     Extract article content with caching.
     
@@ -237,7 +241,7 @@ async def extract_article(url: str) -> Tuple[Optional[str], Optional[str], int, 
     # Fetch HTML
     html = await fetch_html(canonical_url)
     if html is None:
-        result = (None, None, 0, 'error', None, None, False)
+        result = (None, None, 0, 'error', None, None, False, None)
         _set_cache(canonical_url, *result)
         return result
     
@@ -339,6 +343,45 @@ async def extract_article(url: str) -> Tuple[Optional[str], Optional[str], int, 
     
     # Determine status based on extraction results
     paywalled = _is_likely_paywalled(html, body, word_count)
+
+    # Try to detect canonical URL from metadata if available
+    canonical_from_meta: Optional[str] = None
+    try:
+        # <link rel="canonical" href="...">
+        m_link = re.search(r'<link[^>]+rel=["\']canonical["\'][^>]*href=["\'](.*?)["\']', html, re.IGNORECASE)
+        if m_link:
+            href = m_link.group(1).strip()
+            if href:
+                canonical_from_meta = canonicalize_url(urljoin(canonical_url, href))
+        # <meta property="og:url" content="...">
+        if not canonical_from_meta:
+            m_og = re.search(r'<meta[^>]+property=["\']og:url["\'][^>]*content=["\'](.*?)["\']', html, re.IGNORECASE)
+            if m_og:
+                href = m_og.group(1).strip()
+                if href:
+                    canonical_from_meta = canonicalize_url(urljoin(canonical_url, href))
+        # JSON-LD mainEntityOfPage / url
+        if not canonical_from_meta:
+            for script_match in re.finditer(r'<script[^>]+type=[\'\"]application/ld\+json[\'\"][^>]*>(.*?)</script>', html, re.IGNORECASE | re.DOTALL):
+                block = script_match.group(1).strip()
+                try:
+                    data = json.loads(block)
+                except Exception:
+                    continue
+                nodes = data if isinstance(data, list) else [data]
+                for node in nodes:
+                    if isinstance(node, dict):
+                        for key in ('mainEntityOfPage', 'url'):
+                            val = node.get(key)
+                            if isinstance(val, str) and val:
+                                canonical_from_meta = canonicalize_url(urljoin(canonical_url, val))
+                                break
+                        if canonical_from_meta:
+                            break
+                if canonical_from_meta:
+                    break
+    except Exception:
+        pass
     if body and word_count > 100 and not paywalled:
         status = 'extracted'
     elif body:
@@ -346,6 +389,6 @@ async def extract_article(url: str) -> Tuple[Optional[str], Optional[str], int, 
     else:
         status = 'missing'  # No content extracted
     
-    result = (headline, body, word_count, status, author, published_at, paywalled)
+    result = (headline, body, word_count, status, author, published_at, paywalled, canonical_from_meta)
     _set_cache(canonical_url, *result)
     return result

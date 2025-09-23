@@ -60,8 +60,6 @@ SUMMARY_MAX_CHARS=600                    # Default maximum characters in summary
 
 ## Run Commands
 
-### Local Development
-
 ```bash
 # Start with auto-reload for development
 uvicorn main:app --reload
@@ -215,8 +213,11 @@ GET /analyze/url?url=https://example.com/news-article
 
 ```json
 {
+  "id": "abc123defg",
+  "canonicalUrl": "https://example.com/news-article",
   "extract": {
-    "url": "https://example.com/news-article",
+    "url": "https://example.com/news-article?utm_source=twitter",
+    "canonicalUrl": "https://example.com/news-article",
     "headline": "Article Headline",
     "source": "Source Name",
     "body": "Full article text...",
@@ -237,6 +238,34 @@ GET /analyze/url?url=https://example.com/news-article
   }
 }
 ```
+
+Fields:
+
+- `id`: Stable 10-char slug derived from the canonical URL (sha256 → base32)
+- `canonicalUrl`: Canonical URL detected from the page (`<link rel=canonical>`, `og:url`, JSON-LD),
+  falling back to normalized input URL when not present
+
+### GET `/analyze/id/{id}`
+
+Helper endpoint to address an analysis by deterministic id. Since ids are one-way hashes, provide the `url` query for verification and analysis.
+
+**Parameters:**
+
+- `id` (path): Deterministic slug produced from the canonical URL
+- `url` (query, required): Original URL; must canonicalize to the same id
+
+**Example Request:**
+
+```
+GET /analyze/id/abc123defg?url=https://example.com/news-article
+```
+
+Returns the same response shape as `/analyze/url`.
+
+Notes:
+
+- If the `url` canonicalizes to an id different from the path parameter, the API responds with `400`.
+- This provides a stable route for the frontend without a database.
 
 ## Architecture
 
