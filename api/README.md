@@ -6,6 +6,8 @@ FastAPI backend for news search and analysis with configurable provider support.
 
 - **News Search**: `/search` endpoint with pagination support
 - **Article Extraction**: `GET /extract?url=` — fetch + extract article text with trafilatura; returns normalized shape
+- **Text Summarization**: `POST /summarize` — create lead-3 summaries from article text
+- **Combined Analysis**: `GET /analyze/url` — extract and summarize in a single request
 - **Provider Abstraction**: Configurable news providers (NewsAPI implemented)
 - **Settings Management**: Pydantic-based configuration with environment variables
 - **Mock Data Fallback**: Automatic fallback when API keys not configured
@@ -99,6 +101,33 @@ GET /extract?url=<article-url>
 ```
 
 Returns normalized shape with fields like `url`, `headline`, `source`, `publishedAt`, `author`, `body`, `wordCount`, `extractStatus`, and `paywalled`.
+
+### POST `/summarize`
+
+Summarize provided text using a lead-3 algorithm.
+
+```
+POST /summarize
+Content-Type: application/json
+
+{
+  "text": "Article text to summarize",
+  "maxSentences": 3,  // optional, default: 3
+  "maxChars": 600     // optional, default: 600
+}
+```
+
+Returns `SummaryResult` with extracted sentences, joined text, and character/word counts.
+
+### GET `/analyze/url`
+
+Combined extraction and summarization in a single request.
+
+```
+GET /analyze/url?url=<article-url>
+```
+
+Returns `AnalyzeResult` containing both the extraction result and a summary (if content was successfully extracted).
 
 ## Architecture
 
