@@ -23,6 +23,11 @@ TheBiasLens consists of two main components:
 - **Real-time Updates**: Live search results with loading states and error handling
 - **Unified Analysis UI**: Integrated card layout combining metadata, bias analysis, and summary
 - **Copy Functionality**: One-click copy for summaries with visual feedback
+- **Shareable Analysis Links**: Deterministic analysis ids enable clean links like `/analyze/:id?url=...`
+- **Open/Copy/Share Actions**: Open canonical article, copy app link with feedback, or share via Web Share API
+- **Canonical URL Detection**: Extracts and reports canonical URL per page metadata
+- **Sources & Citations**: Primary source plus up to 5 referenced links deduped by host
+- **UX Polishing**: Clear (X) button on URL input, subtle skeletons for actions/sources, footer disclaimer
 
 ### Planned Features 🚧
 
@@ -59,6 +64,16 @@ TheBiasLens consists of two main components:
 2. **Analyze Articles**: Click "Analyze" buttons in search results to extract and summarize content
 3. **Review Results**: View extracted article metadata, content, and AI-generated summaries
 4. **Navigate Seamlessly**: Switch between search and analysis with automatic URL parameter handling
+5. **Share Results**: Use Copy/Share actions to share a stable link to the analysis
+
+### Direct Link Formats
+
+- Analyze by URL query:
+  - `/analyze?url=<article-url>`
+- Analyze by deterministic id (clean route):
+  - `/analyze/<id>?url=<article-url>`
+
+Note: `id` is derived from the canonicalized URL (sha256→base32) and cannot be reversed; the `url` query is required to run the analysis.
 
 ## Project Structure
 
@@ -92,6 +107,9 @@ thebiaslens/
 - URL parameter handling for direct analysis links
 - Copy feedback and improved user interactions
 - Mock data fallback for development
+- Share/Copy actions for analysis links
+- Sources & Citations section on Analyze page
+- Deterministic analysis ids and canonical URL detection
 
 🚧 **In Progress**:
 
@@ -105,3 +123,7 @@ thebiaslens/
 - User authentication and preferences
 - Historical analysis and trending
 - Browser extension for real-time analysis
+
+## Disclaimer
+
+Bias and fact-check estimations are AI-generated and may not be fully accurate. This is for informational purposes only.

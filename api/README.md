@@ -70,8 +70,6 @@ uvicorn main:app --host 127.0.0.1 --port 8000 --reload
 
 API will be available at `http://127.0.0.1:8000`
 
-### Production Deploy
-
 ```bash
 # Production server
 uvicorn main:app --host 0.0.0.0 --port $PORT
@@ -85,7 +83,7 @@ uvicorn main:app --host 0.0.0.0 --port $PORT --workers 4
 ### GET `/health`
 
 Health check endpoint for monitoring and service discovery.
-
+"url": "https://example.com/news-article",
 **Response:**
 
 ```json
@@ -114,20 +112,21 @@ GET /search?q=climate%20change&pageSize=5&cursor=1
 ```
 
 **Response:**
-
-```json
 {
-  "items": [
-    {
-      "url": "https://example.com/article",
-      "source": "Source Name",
-      "publishedAt": "2025-09-22T10:00:00Z",
-      "title": "Article Title",
-      "extractStatus": "api"
-    }
-  ],
-  "nextCursor": 2
+"items": [
+{
+"url": "https://example.com/article",
+"source": "Source Name",
+"publishedAt": "2025-09-22T10:00:00Z",
+"title": "Article Title",
+"extractStatus": "api"
 }
+],
+**Analyze by ID**: `GET /analyze/id/{id}?url=` — stable route using deterministic id (requires `url`)
+Client tip:
+
+- App link format: `/analyze/<id>?url=<encoded-url>`
+
 ```
 
 ### GET `/extract`
@@ -141,8 +140,10 @@ Extract article content from a URL using trafilatura.
 **Example Request:**
 
 ```
+
 GET /extract?url=https://example.com/news-article
-```
+
+````
 
 **Response:**
 
@@ -158,7 +159,7 @@ GET /extract?url=https://example.com/news-article
   "extractStatus": "extracted",
   "paywalled": false
 }
-```
+````
 
 **Extract Status Values:**
 
