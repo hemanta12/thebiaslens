@@ -22,6 +22,7 @@ from schemas import ExtractResult, SummaryResult, AnalyzeResult
 from services.extract import extract_article
 from services.summarize import summarize_lead3
 from utils.normalize import canonicalize_url, infer_source_from_url
+from utils.analysis_id import make_analysis_id
 
 app = FastAPI()
 
@@ -112,7 +113,7 @@ async def extract(url: str = Query(..., description="URL of the article to extra
     canonical_url = canonicalize_url(url)
     
     # Extract article content
-    headline, body, word_count, status, author, published_at, paywalled = await extract_article(canonical_url)
+    headline, body, word_count, status, author, published_at, paywalled, canonical_from_meta = await extract_article(canonical_url)
     
     # Infer source from URL
     source = infer_source_from_url(canonical_url)
@@ -120,6 +121,7 @@ async def extract(url: str = Query(..., description="URL of the article to extra
     # Build and return ExtractResult
     result = ExtractResult(
         url=canonical_url,
+        canonicalUrl=canonical_from_meta or canonical_url,
         headline=headline,
         source=source,
         publishedAt=published_at,
@@ -190,7 +192,7 @@ async def analyze_url(url: str = Query(..., description="URL of the article to a
     canonical_url = canonicalize_url(url)
     
     # Extract article content (reusing the extraction logic)
-    headline, body, word_count, status, author, published_at, paywalled = await extract_article(canonical_url)
+    headline, body, word_count, status, author, published_at, paywalled, canonical_from_meta = await extract_article(canonical_url)
     
     # Infer source from URL
     source = infer_source_from_url(canonical_url)
@@ -198,6 +200,7 @@ async def analyze_url(url: str = Query(..., description="URL of the article to a
     # Build ExtractResult
     extract_result = ExtractResult(
         url=canonical_url,
+        canonicalUrl=canonical_from_meta or canonical_url,
         headline=headline,
         source=source,
         publishedAt=published_at,
@@ -214,9 +217,68 @@ async def analyze_url(url: str = Query(..., description="URL of the article to a
         summary_data = summarize_lead3(body)
         summary_result = SummaryResult(**summary_data)
     
+    # Compute analysis id and canonical
+    analysis_id = make_analysis_id(canonical_url)
+    canonical_final = extract_result.canonicalUrl or canonical_url
+
     # Return combined result
     return AnalyzeResult(
+        id=analysis_id,
+        canonicalUrl=canonical_final,
         extract=extract_result,
         summary=summary_result,
         bias=None
+    )
+
+
+@app.get("/analyze/id/{analysis_id}", response_model=AnalyzeResult)
+async def analyze_by_id(analysis_id: str, url: Optional[str] = Query(None, description="Original URL to analyze if id cannot be reversed")):
+    """
+    Analyze by deterministic id. Since ids are one-way hashes, require `?url=` as fallback.
+
+    If `url` is not provided, return 400.
+    """
+    if not url:
+        raise HTTPException(status_code=400, detail="Missing url query parameter for analysis id lookup")
+
+    # Validate and canonicalize
+    try:
+        parsed = urlparse(url)
+        if not parsed.scheme or not parsed.netloc:
+            raise HTTPException(status_code=400, detail="Invalid URL format")
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid URL format")
+
+    # Best-effort check: ensure provided id matches recomputed id
+    canonical_url = canonicalize_url(url)
+    recomputed_id = make_analysis_id(canonical_url)
+    if recomputed_id != analysis_id:
+        raise HTTPException(status_code=400, detail="Provided url does not match analysis id")
+
+    # Proceed with the same analysis flow as /analyze/url
+    headline, body, word_count, status, author, published_at, paywalled, canonical_from_meta = await extract_article(canonical_url)
+    source = infer_source_from_url(canonical_url)
+    extract_result = ExtractResult(
+        url=canonical_url,
+        canonicalUrl=canonical_from_meta or canonical_url,
+        headline=headline,
+        source=source,
+        publishedAt=published_at,
+        author=author,
+        body=body,
+        wordCount=word_count,
+        extractStatus=status,
+        paywalled=paywalled,
+    )
+    summary_result = None
+    if body:
+        summary_data = summarize_lead3(body)
+        summary_result = SummaryResult(**summary_data)
+    canonical_final = extract_result.canonicalUrl or canonical_url
+    return AnalyzeResult(
+        id=analysis_id,
+        canonicalUrl=canonical_final,
+        extract=extract_result,
+        summary=summary_result,
+        bias=None,
     )

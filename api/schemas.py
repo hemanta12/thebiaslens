@@ -31,6 +31,7 @@ class ArticleStub(BaseModel):
 class ExtractResult(BaseModel):
     """Full article extraction result with content."""
     url: str
+    canonicalUrl: Optional[str] = None
     headline: Optional[str] = None
     source: str
     publishedAt: Optional[datetime] = None
@@ -51,6 +52,8 @@ class SummaryResult(BaseModel):
 
 class AnalyzeResult(BaseModel):
     """Combined extraction and summary result."""
+    id: str
+    canonicalUrl: str
     extract: ExtractResult
     summary: Optional[SummaryResult] = None
     bias: Optional[BiasResult] = None

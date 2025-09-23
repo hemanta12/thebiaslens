@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Container, Typography, Alert, Card, CardContent } from '@mui/material';
+import { Box, Container, Typography, Alert, Card, CardContent, Button, Stack } from '@mui/material';
 import { useSearchParams } from 'react-router-dom';
 import { useAnalyze } from '../hooks/useAnalyze';
 import UrlForm from '../components/analyze/UrlForm';
@@ -8,6 +8,8 @@ import ArticleTextCard from '../components/analyze/ArticleTextCard';
 import { BiasAndSummarySection } from '../components/analyze/BiasAndSummarySection';
 import ArticleMetadata from '../components/analyze/ArticleMetadata';
 import { formatDate, getPreviewText } from '../utils/textUtils';
+import SourcesSection from '../components/analyze/SourcesSection';
+import { buildAnalyzeLink } from '../lib/links';
 
 const AnalyzePage = () => {
   const [searchParams] = useSearchParams();
@@ -24,6 +26,40 @@ const AnalyzePage = () => {
   }, [searchParams]);
 
   const { data: analyzeResult, isLoading, error } = useAnalyze(currentUrl);
+  const [copyLinkSuccess, setCopyLinkSuccess] = useState(false);
+
+  const handleOpenArticle = () => {
+    const target = analyzeResult?.extract.canonicalUrl || currentUrl;
+    if (target) window.open(target, '_blank', 'noopener');
+  };
+
+  const handleCopyLink = async () => {
+    if (!analyzeResult) return;
+    const link = buildAnalyzeLink(analyzeResult.id, currentUrl);
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopyLinkSuccess(true);
+      setTimeout(() => setCopyLinkSuccess(false), 2000);
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleShare = async () => {
+    if (!analyzeResult) return;
+    const link = buildAnalyzeLink(analyzeResult.id, currentUrl);
+    const title = analyzeResult.extract.headline || 'Article Analysis';
+    const text = `Bias and summary for ${analyzeResult.extract.source}`;
+    if ((navigator as any).share) {
+      try {
+        await (navigator as any).share({ title, text, url: link });
+      } catch {
+        // ignored
+      }
+    } else {
+      await navigator.clipboard.writeText(link);
+    }
+  };
 
   const handleInputTypeChange = (
     _event: React.MouseEvent<HTMLElement>,
@@ -88,10 +124,11 @@ const AnalyzePage = () => {
                   {/* Divider */}
                   <div className="border-t border-gray-200 my-3"></div>
 
-                  {/* Bias and Summary header */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="h-6 bg-gray-200 rounded w-40"></div>
-                    <div className="w-5 h-5 bg-gray-200 rounded-full"></div>
+                  {/* Actions skeleton row */}
+                  <div className="flex items-center justify-end mb-4 gap-2">
+                    <div className="h-8 bg-gray-200 rounded w-20"></div>
+                    <div className="h-8 bg-gray-200 rounded w-24"></div>
+                    <div className="h-8 bg-gray-200 rounded w-20"></div>
                   </div>
 
                   {/* Bias section */}
@@ -145,10 +182,28 @@ const AnalyzePage = () => {
 
         {analyzeResult && !isLoading && !error && (
           <>
-            {/* Single card with Title, Source, Metadata, Bias and Summary */}
+            {/* Single card with Title, Source, Metadata, header actions, Bias and Summary */}
             <Card sx={{ mt: 3, boxShadow: 2 }}>
               <CardContent sx={{ p: 3 }}>
                 <ArticleMetadata result={analyzeResult.extract} formatDate={formatDate} />
+
+                {/* Actions row (top-right of card header) */}
+                <Stack direction="row" spacing={1} sx={{ justifyContent: 'flex-end', mb: 1 }}>
+                  <Button size="small" variant="outlined" onClick={handleOpenArticle}>
+                    ↗︎ Open
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={handleCopyLink}
+                    color={copyLinkSuccess ? 'success' : 'primary'}
+                  >
+                    {copyLinkSuccess ? '✅ Copied!' : '🔗 Copy Link'}
+                  </Button>
+                  <Button size="small" variant="outlined" onClick={handleShare}>
+                    📤 Share
+                  </Button>
+                </Stack>
 
                 {/* Paywall and status messages */}
                 {analyzeResult.extract.paywalled && (
@@ -183,6 +238,21 @@ const AnalyzePage = () => {
               onToggleText={handleToggleText}
               getPreviewText={getPreviewText}
             />
+
+            {/* Sources & Citations */}
+            <SourcesSection
+              sourceDomain={analyzeResult.extract.source}
+              canonicalUrl={
+                analyzeResult.extract.canonicalUrl || analyzeResult.canonicalUrl || currentUrl
+              }
+              bodyText={analyzeResult.extract.body}
+            />
+
+            {/* Disclaimer */}
+            <Box sx={{ mt: 3, color: 'text.secondary', fontSize: '12.5px', lineHeight: 1.7 }}>
+              Bias and fact-check estimations are AI-generated and may not be fully accurate. This
+              is for informational purposes only.
+            </Box>
           </>
         )}
       </Box>

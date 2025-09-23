@@ -14,12 +14,16 @@ React + TypeScript frontend for news search and content analysis with responsive
 - **Unified Analysis UI**: Combined card layout for metadata, bias, and summary analysis
 - **Responsive Design**: Mobile-first UI optimized for all screen sizes
 - **Navigation Flow**: Seamless transition from search results to detailed analysis
+- **Shareable Links**: Clean route `/analyze/:id?url=...` for sharing deterministic analyses
+- **Actions**: Open canonical article, Copy link with feedback, Share via Web Share API
+- **Sources & Citations**: Primary source plus up to 5 referenced links parsed from article text
 
 ### User Experience
 
 - **Loading States**: Skeleton screens and loading indicators for better perceived performance
 - **Error Handling**: User-friendly error messages and fallbacks
 - **Copy Feedback**: Visual confirmation when text is copied to clipboard
+- **Input Clear**: One-click clear (X) control inside the analysis URL input
 - **Unified Interface**: Seamless single-card experience for article analysis
 - **URL Parameter Support**: Direct links to analysis pages with pre-filled URLs
 - **Progressive Enhancement**: Works with or without JavaScript enabled
@@ -106,6 +110,8 @@ REACT_APP_API_BASE_URL=http://127.0.0.1:8000
 - `/` - Home/Search page with news article search
 - `/analyze` - Article analysis page with extraction and summarization
   - Supports `?url=` parameter for direct analysis
+- `/analyze/:id` - Shareable analysis route
+  - Requires `?url=` to run since the id is one-way and derived from the canonical URL
 - `/recents` - Recent searches (coming soon)
 - `/settings` - User preferences (coming soon)
 - `/details/:id` - Article details (coming soon)
@@ -126,6 +132,7 @@ REACT_APP_API_BASE_URL=http://127.0.0.1:8000
 2. Enters article URL manually
 3. System extracts content and generates summary
 4. Results display with copy functionality
+5. Optionally share using the clean route `/analyze/:id?url=<article-url>`
 
 ## Features in Development
 
@@ -141,6 +148,9 @@ REACT_APP_API_BASE_URL=http://127.0.0.1:8000
 - API integration with fallbacks
 - URL parameter handling for direct analysis
 - Copy-to-clipboard functionality with feedback
+- Share/Copy actions for analysis links
+- Sources & Citations section
+- Clear (X) control for analysis URL input
 - Accessibility improvements and ARIA support
 
 🚧 **Planned**:
@@ -151,6 +161,7 @@ REACT_APP_API_BASE_URL=http://127.0.0.1:8000
 - Saved searches and bookmarks
 - Advanced filtering and sorting
 - Social sharing capabilities
+  - Basic Web Share is supported; advanced share previews coming later
 
 ## Development Notes
 
