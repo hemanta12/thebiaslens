@@ -18,6 +18,18 @@ export type ExtractResult = {
   paywalled?: boolean;
 };
 
+export type SummaryResult = {
+  sentences: string[];
+  joined: string;
+  charCount: number;
+  wordCount: number;
+};
+
+export type AnalyzeResult = {
+  extract: ExtractResult;
+  summary?: SummaryResult | null;
+};
+
 export type Paged<T> = {
   items: T[];
   nextCursor?: string | null;

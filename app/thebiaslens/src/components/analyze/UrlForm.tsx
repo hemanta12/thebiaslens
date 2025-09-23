@@ -4,10 +4,16 @@ import { Box, TextField, Button } from '@mui/material';
 interface UrlFormProps {
   onSubmit: (url: string) => void;
   isLoading: boolean;
+  value?: string;
 }
 
-const UrlForm: React.FC<UrlFormProps> = ({ onSubmit, isLoading }) => {
-  const [url, setUrl] = useState('');
+const UrlForm: React.FC<UrlFormProps> = ({ onSubmit, isLoading, value = '' }) => {
+  const [url, setUrl] = useState(value);
+
+  // Update internal state when value prop changes
+  React.useEffect(() => {
+    setUrl(value);
+  }, [value]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
