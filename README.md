@@ -16,14 +16,17 @@ TheBiasLens consists of two main components:
 - **News Search**: Search articles from multiple news providers (currently NewsAPI)
 - **Article Extraction**: Extract full article content from URLs using trafilatura
 - **Text Summarization**: Generate lead-3 summaries from extracted content
-- **Combined Analysis**: Single-endpoint analysis combining extraction and summarization
+- **Bias Analysis UI**: Visual political bias meter with Left/Neutral/Right labels
+- **Combined Analysis**: Single-endpoint analysis combining extraction, summarization, and bias detection
 - **Responsive Design**: Mobile-first UI with Material-UI components
 - **Search to Analysis Flow**: Click "Analyze" buttons in search results to automatically extract and summarize articles
 - **Real-time Updates**: Live search results with loading states and error handling
+- **Unified Analysis UI**: Integrated card layout combining metadata, bias analysis, and summary
+- **Copy Functionality**: One-click copy for summaries with visual feedback
 
 ### Planned Features 🚧
 
-- **Bias Analysis**: Left/Center/Right political framing detection
+- **Bias ML Model**: Implementation of the political framing detection algorithm
 - **Fact-check Integration**: Surface fact-check snippets with citations
 - **User Preferences**: Saved searches and bookmarks
 - **Historical Analysis**: Track bias trends over time
@@ -82,14 +85,17 @@ thebiaslens/
 - Article extraction with trafilatura integration
 - Lead-3 text summarization
 - Combined analysis endpoint
+- Bias schema and UI implementation
+- Unified analysis card with integrated components
 - Responsive web interface with search and analysis
 - Navigation flow from search results to analysis page
 - URL parameter handling for direct analysis links
+- Copy feedback and improved user interactions
 - Mock data fallback for development
 
 🚧 **In Progress**:
 
-- Bias detection algorithms
+- Bias detection ML model integration
 - Fact-checking integration
 - Enhanced UI/UX improvements
 

@@ -10,6 +10,8 @@ React + TypeScript frontend for news search and content analysis with responsive
 - **Article Analysis**: Extract and summarize articles with a single click from search results
 - **Content Extraction**: Full article text extraction with metadata display
 - **Text Summarization**: AI-powered lead-3 summaries with copy-to-clipboard functionality
+- **Bias Visualization**: Interactive political bias meter with Left/Neutral/Right indicators
+- **Unified Analysis UI**: Combined card layout for metadata, bias, and summary analysis
 - **Responsive Design**: Mobile-first UI optimized for all screen sizes
 - **Navigation Flow**: Seamless transition from search results to detailed analysis
 
@@ -17,6 +19,8 @@ React + TypeScript frontend for news search and content analysis with responsive
 
 - **Loading States**: Skeleton screens and loading indicators for better perceived performance
 - **Error Handling**: User-friendly error messages and fallbacks
+- **Copy Feedback**: Visual confirmation when text is copied to clipboard
+- **Unified Interface**: Seamless single-card experience for article analysis
 - **URL Parameter Support**: Direct links to analysis pages with pre-filled URLs
 - **Progressive Enhancement**: Works with or without JavaScript enabled
 - **Accessibility**: ARIA labels, keyboard navigation, and screen reader support
@@ -43,13 +47,17 @@ src/
 │       ├── UrlForm.tsx     # URL input form for analysis
 │       ├── ExtractResultCard.tsx  # Article content display
 │       ├── ArticleMetadata.tsx    # Article title, source, metadata
-│       ├── SummarySection.tsx     # Summary display and controls
-│       └── ArticleTextSection.tsx # Full text toggle and display
+│       ├── BiasMeter.tsx    # Political bias visualization
+│       ├── BiasLegend.tsx   # Explanatory modal for bias analysis
+│       ├── BiasAndSummarySection.tsx # Combined bias and summary display
+│       ├── ArticleTextCard.tsx   # Full article text display
+│       └── InputTypeSelector.tsx # URL/Text/PDF selector (URL implemented)
 ├── hooks/                  # Custom React hooks
 │   ├── useSearch.ts        # Single-page search hook
 │   ├── useSearchPaged.ts   # Paginated search hook
 │   ├── useExtract.ts       # Article extraction hook
 │   ├── useSummarize.ts     # Text summarization hook
+│   ├── useAnalyze.ts       # Combined extraction, summary, and bias analysis
 │   └── useTheme.ts         # Theme management
 ├── routes/                 # Page components
 │   ├── Search.tsx          # Main search page
@@ -126,15 +134,18 @@ REACT_APP_API_BASE_URL=http://127.0.0.1:8000
 - Search interface with real-time results
 - Article content extraction from URLs
 - AI-powered text summarization
+- Political bias visualization UI
+- Unified analysis card interface
 - Responsive design and navigation
 - Error handling and loading states
 - API integration with fallbacks
 - URL parameter handling for direct analysis
-- Copy-to-clipboard functionality
+- Copy-to-clipboard functionality with feedback
+- Accessibility improvements and ARIA support
 
 🚧 **Planned**:
 
-- Bias analysis visualization
+- Bias ML model integration
 - Fact-check integration
 - User preferences and history
 - Saved searches and bookmarks
