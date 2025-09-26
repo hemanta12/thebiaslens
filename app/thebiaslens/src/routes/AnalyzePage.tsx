@@ -10,6 +10,7 @@ import ArticleMetadata from '../components/analyze/ArticleMetadata';
 import { formatDate, getPreviewText } from '../utils/textUtils';
 import SourcesSection from '../components/analyze/SourcesSection';
 import { buildAnalyzeLink } from '../lib/links';
+import { downloadShareCard } from '../utils/downloadImage';
 
 const AnalyzePage = () => {
   const [searchParams] = useSearchParams();
@@ -27,6 +28,7 @@ const AnalyzePage = () => {
 
   const { data: analyzeResult, isLoading, error } = useAnalyze(currentUrl);
   const [copyLinkSuccess, setCopyLinkSuccess] = useState(false);
+  const [downloadImageError, setDownloadImageError] = useState<string | null>(null);
 
   const handleOpenArticle = () => {
     const target = analyzeResult?.extract.canonicalUrl || currentUrl;
@@ -58,6 +60,20 @@ const AnalyzePage = () => {
       }
     } else {
       await navigator.clipboard.writeText(link);
+    }
+  };
+
+  const handleDownloadImage = async () => {
+    if (!analyzeResult) return;
+
+    try {
+      setDownloadImageError(null);
+      await downloadShareCard(analyzeResult);
+    } catch (error) {
+      console.error('Download image failed:', error);
+      setDownloadImageError(
+        'Failed to generate image. If you use content blockers, allow canvas capture and try again.',
+      );
     }
   };
 
@@ -182,6 +198,22 @@ const AnalyzePage = () => {
 
         {analyzeResult && !isLoading && !error && (
           <>
+            {/* Download image error alert */}
+            {downloadImageError && (
+              <Alert
+                severity="error"
+                sx={{ mt: 2 }}
+                onClose={() => setDownloadImageError(null)}
+                action={
+                  <Button color="inherit" size="small" onClick={handleDownloadImage}>
+                    Try Again
+                  </Button>
+                }
+              >
+                {downloadImageError}
+              </Alert>
+            )}
+
             {/* Single card with Title, Source, Metadata, header actions, Bias and Summary */}
             <Card sx={{ mt: 3, boxShadow: 2 }}>
               <CardContent sx={{ p: 3 }}>
@@ -197,10 +229,49 @@ const AnalyzePage = () => {
                     variant="outlined"
                     onClick={handleCopyLink}
                     color={copyLinkSuccess ? 'success' : 'primary'}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleCopyLink();
+                      }
+                    }}
+                    tabIndex={0}
+                    aria-label={
+                      copyLinkSuccess
+                        ? 'Link copied to clipboard'
+                        : 'Copy analysis link to clipboard'
+                    }
                   >
                     {copyLinkSuccess ? '✅ Copied!' : '🔗 Copy Link'}
                   </Button>
-                  <Button size="small" variant="outlined" onClick={handleShare}>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={handleDownloadImage}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleDownloadImage();
+                      }
+                    }}
+                    tabIndex={0}
+                    aria-label="Download analysis as image"
+                  >
+                    💾 Download Image
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={handleShare}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleShare();
+                      }
+                    }}
+                    tabIndex={0}
+                    aria-label="Share analysis"
+                  >
                     📤 Share
                   </Button>
                 </Stack>

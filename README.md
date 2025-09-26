@@ -28,6 +28,7 @@ TheBiasLens consists of two main components:
 - **Canonical URL Detection**: Extracts and reports canonical URL per page metadata
 - **Sources & Citations**: Primary source plus up to 5 referenced links deduped by host
 - **UX Polishing**: Clear (X) button on URL input, subtle skeletons for actions/sources, footer disclaimer
+- **Share Image**: Download analysis as 1200x630 PNG for clean social media sharing without server OG tags
 
 ### Planned Features 🚧
 
@@ -110,6 +111,7 @@ thebiaslens/
 - Share/Copy actions for analysis links
 - Sources & Citations section on Analyze page
 - Deterministic analysis ids and canonical URL detection
+- Share Image feature with HTML2Canvas rendering for social media sharing
 
 🚧 **In Progress**:
 

@@ -18,6 +18,14 @@ React + TypeScript frontend for news search and content analysis with responsive
 - **Actions**: Open canonical article, Copy link with feedback, Share via Web Share API
 - **Sources & Citations**: Primary source plus up to 5 referenced links parsed from article text
 
+### Share Image
+
+- **Why**: Clean LinkedIn sharing without server OG (Open Graph) tags
+- **How**: Click "Download Image" button on the Analyze page
+- **What is included**: Article title, source domain, bias meter with needle, summary text
+- **Format**: 1200x630 PNG optimized for social media sharing
+- **Technology**: HTML2Canvas rendering of styled React components
+
 ### User Experience
 
 - **Loading States**: Skeleton screens and loading indicators for better perceived performance
