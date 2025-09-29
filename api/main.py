@@ -1,6 +1,7 @@
 # TODO: Upstash Redis cache later for 48h TTL once analysis exists.
 
 # News API integration with configurable providers
+import logging
 import re
 from fastapi import FastAPI, Query, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
@@ -18,13 +19,20 @@ class SummarizeRequest(BaseModel):
 from config import settings
 from providers.newsapi import search_news
 from data.mock_results import MOCK_ARTICLES
-from schemas import ExtractResult, SummaryResult, AnalyzeResult
+from schemas import ExtractResult, SummaryResult, AnalyzeResult, FactCheckResult, FactCheckRequest
 from services.extract import extract_article
 from services.summarize import summarize_lead3
+from services.factcheck_service import find_best_factchecks
 from utils.normalize import canonicalize_url, infer_source_from_url
 from utils.analysis_id import make_analysis_id
 
 app = FastAPI()
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 # CORS configuration
 allowed_origins = [
@@ -281,4 +289,15 @@ async def analyze_by_id(analysis_id: str, url: Optional[str] = Query(None, descr
         extract=extract_result,
         summary=summary_result,
         bias=None,
+    )
+
+
+@app.post("/factcheck", response_model=FactCheckResult)
+async def factcheck(payload: FactCheckRequest):
+    """Get fact-check results for a headline with optional source domain and summary."""
+    return await find_best_factchecks(
+        headline=payload.headline,
+        source_domain=payload.sourceDomain,
+        summary=payload.summary,
+        max_items=3
     )

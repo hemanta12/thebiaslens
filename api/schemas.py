@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, AnyUrl
 from typing import Optional, Literal, List
 from datetime import datetime
 from enum import Enum
@@ -48,6 +48,31 @@ class SummaryResult(BaseModel):
     joined: str
     charCount: int
     wordCount: int
+
+
+class FactCheckRequest(BaseModel):
+    """Fact check request payload."""
+    headline: str
+    sourceDomain: Optional[str] = None
+    summary: Optional[str] = None
+
+
+class FactCheckItem(BaseModel):
+    """Individual fact check result item."""
+    claim: str
+    verdict: Optional[str] = None
+    snippet: Optional[str] = None
+    source: Optional[str] = None
+    url: Optional[AnyUrl] = None
+    matchReason: Optional[str] = None
+    publishedAt: Optional[str] = None
+    similarityPercentage: Optional[int] = None
+
+
+class FactCheckResult(BaseModel):
+    """Fact check result collection."""
+    status: Literal["found", "none"]
+    items: List[FactCheckItem] = []
 
 
 class AnalyzeResult(BaseModel):

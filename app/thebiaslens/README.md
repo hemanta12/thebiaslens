@@ -17,6 +17,7 @@ React + TypeScript frontend for news search and content analysis with responsive
 - **Shareable Links**: Clean route `/analyze/:id?url=...` for sharing deterministic analyses
 - **Actions**: Open canonical article, Copy link with feedback, Share via Web Share API
 - **Sources & Citations**: Primary source plus up to 5 referenced links parsed from article text
+- **Fact-Check Integration**: Comprehensive fact-checking with relation levels, verdict visualization, and source attribution
 
 ### Share Image
 
@@ -63,6 +64,7 @@ src/
 │       ├── BiasLegend.tsx   # Explanatory modal for bias analysis
 │       ├── BiasAndSummarySection.tsx # Combined bias and summary display
 │       ├── ArticleTextCard.tsx   # Full article text display
+│       ├── FactCheckSection.tsx  # Fact-check results with verdict visualization
 │       └── InputTypeSelector.tsx # URL/Text/PDF selector (URL implemented)
 ├── hooks/                  # Custom React hooks
 │   ├── useSearch.ts        # Single-page search hook
@@ -70,6 +72,7 @@ src/
 │   ├── useExtract.ts       # Article extraction hook
 │   ├── useSummarize.ts     # Text summarization hook
 │   ├── useAnalyze.ts       # Combined extraction, summary, and bias analysis
+│   ├── useFactCheck.ts     # Fact-check integration hook
 │   └── useTheme.ts         # Theme management
 ├── routes/                 # Page components
 │   ├── Search.tsx          # Main search page
@@ -160,11 +163,11 @@ REACT_APP_API_BASE_URL=http://127.0.0.1:8000
 - Sources & Citations section
 - Clear (X) control for analysis URL input
 - Accessibility improvements and ARIA support
+- Comprehensive fact-check integration with dynamic relation levels and verdict visualization
 
 🚧 **Planned**:
 
 - Bias ML model integration
-- Fact-check integration
 - User preferences and history
 - Saved searches and bookmarks
 - Advanced filtering and sorting
