@@ -10,18 +10,15 @@ import json
 from utils.normalize import canonicalize_url
 from urllib.parse import urljoin
 
-# In-memory cache for 60 seconds
 _cache: Dict[str, Dict[str, Any]] = {}
-_cache_ttl = 60  # seconds
+_cache_ttl = 60
 
 
 def _is_cache_valid(timestamp: float) -> bool:
-    """Check if cache entry is still valid (within TTL)."""
     return time.time() - timestamp < _cache_ttl
 
 
 def _get_from_cache(canonical_url: str) -> Optional[Tuple[Optional[str], Optional[str], int, str, Optional[str], Optional[str], bool, Optional[str]]]:
-    """Get extraction result from cache if valid."""
     if canonical_url in _cache:
         entry = _cache[canonical_url]
         if _is_cache_valid(entry['timestamp']):
@@ -36,7 +33,6 @@ def _get_from_cache(canonical_url: str) -> Optional[Tuple[Optional[str], Optiona
                 entry.get('canonical_from_meta'),
             )
         else:
-            # Remove expired entry
             del _cache[canonical_url]
     return None
 
@@ -52,7 +48,6 @@ def _set_cache(
     paywalled: bool,
     canonical_from_meta: Optional[str],
 ) -> None:
-    """Store extraction result in cache."""
     _cache[canonical_url] = {
         'headline': headline,
         'body': body,
@@ -67,19 +62,10 @@ def _set_cache(
 
 
 async def fetch_html(url: str) -> Optional[str]:
-    """
-    Fetch HTML content from URL using httpx with 10s timeout.
-    
-    Args:
-        url: The URL to fetch
-        
-    Returns:
-        HTML content string or None if fetch fails
-    """
+    """Fetch HTML content from URL using httpx."""
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             headers = {
-                # Use a modern desktop Chrome UA to avoid simplistic bot blocks and legacy-fallback pages
                 'User-Agent': (
                     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
                     'AppleWebKit/537.36 (KHTML, like Gecko) '
@@ -94,18 +80,8 @@ async def fetch_html(url: str) -> Optional[str]:
 
 
 def extract_text(html: str, url: str) -> Tuple[Optional[str], Optional[str], int]:
-    """
-    Extract text content from HTML using trafilatura.
-    
-    Args:
-        html: HTML content string
-        url: Original URL for context
-        
-    Returns:
-        Tuple of (headline, body, word_count)
-    """
+    """Extract text content from HTML using trafilatura."""
     try:
-        # Extract main content without metadata header for a cleaner preview
         extracted = trafilatura.extract(
             html,
             include_comments=False,
@@ -118,17 +94,14 @@ def extract_text(html: str, url: str) -> Tuple[Optional[str], Optional[str], int
         if not extracted:
             return None, None, 0
         
-        # Try to extract headline separately using multiple approaches
         headline = None
         try:
-            # Method 1: Try trafilatura metadata extraction (more robust, not fast)
             metadata = trafilatura.extract_metadata(html, url=url, fast=False)
             if metadata and metadata.title:
                 headline = unescape(metadata.title.strip())
         except Exception:
             pass
         
-        # Method 1.5: Check OpenGraph/Twitter meta titles
         if not headline:
             m_meta = re.search(
                 r"<meta[^>]+(?:property|name)=[\'\"](?:og:title|twitter:title)[\'\"][^>]*content=[\'\"](.*?)[\'\"][^>]*>",
@@ -139,18 +112,13 @@ def extract_text(html: str, url: str) -> Tuple[Optional[str], Optional[str], int
                 if meta_title:
                     headline = meta_title
 
-        # Method 2: If no headline from metadata, try simple HTML parsing
         if not headline:
             try:
-                # Try to find title in basic HTML tags
-                # Look for h1 tags
                 h1_match = re.search(r'<h1[^>]*>(.*?)</h1>', html, re.DOTALL | re.IGNORECASE)
                 if h1_match:
                     potential_title = re.sub(r'<[^>]+>', '', h1_match.group(1)).strip()
-                    if potential_title and len(potential_title) > 10:  # Reasonable title length
+                    if potential_title and len(potential_title) > 10:
                         headline = unescape(potential_title)
-                
-                # If no h1, try title tag
                 if not headline:
                     title_match = re.search(r'<title[^>]*>(.*?)</title>', html, re.DOTALL | re.IGNORECASE)
                     if title_match:
