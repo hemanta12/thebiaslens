@@ -10,8 +10,8 @@ export type BiasLabel = 'Left' | 'Neutral' | 'Right';
 
 export type BiasResult = {
   label: BiasLabel;
-  confidence: number; // [0..1]
-  score: number; // [-1..1] where -1 left, 0 neutral, +1 right
+  confidence: number;
+  score: number;
   calibrationVersion: string;
 };
 
@@ -41,6 +41,28 @@ export type AnalyzeResult = {
   extract: ExtractResult;
   summary?: SummaryResult | null;
   bias?: BiasResult | null;
+};
+
+export type FactCheckRequest = {
+  headline: string;
+  sourceDomain?: string;
+  summary?: string;
+};
+
+export type FactCheckItem = {
+  claim: string;
+  verdict?: string | null;
+  snippet?: string | null;
+  source?: string | null;
+  url?: string | null;
+  matchReason?: string;
+  publishedAt?: string | null;
+  similarityPercentage?: number;
+};
+
+export type FactCheckResult = {
+  status: 'found' | 'none';
+  items: FactCheckItem[];
 };
 
 export type Paged<T> = {

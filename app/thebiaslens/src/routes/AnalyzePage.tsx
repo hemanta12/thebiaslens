@@ -6,6 +6,7 @@ import UrlForm from '../components/analyze/UrlForm';
 import InputTypeSelector from '../components/analyze/InputTypeSelector';
 import ArticleTextCard from '../components/analyze/ArticleTextCard';
 import { BiasAndSummarySection } from '../components/analyze/BiasAndSummarySection';
+import { FactCheckSection } from '../components/analyze/FactCheckSection';
 import ArticleMetadata from '../components/analyze/ArticleMetadata';
 import { formatDate, getPreviewText } from '../utils/textUtils';
 import SourcesSection from '../components/analyze/SourcesSection';
@@ -301,6 +302,19 @@ const AnalyzePage = () => {
                 />
               </CardContent>
             </Card>
+
+            {/* Separate Fact Check Card */}
+            <FactCheckSection
+              headline={analyzeResult.extract.headline || analyzeResult.extract.url}
+              sourceDomain={(() => {
+                try {
+                  return new URL(analyzeResult.extract.url).hostname;
+                } catch {
+                  return undefined;
+                }
+              })()}
+              summary={analyzeResult.summary?.joined}
+            />
 
             {/* Article Text */}
             <ArticleTextCard

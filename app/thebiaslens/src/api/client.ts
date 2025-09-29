@@ -1,3 +1,5 @@
+import type { FactCheckResult, FactCheckRequest } from '../types/api';
+
 export async function get<T>(path: string, params?: Record<string, string>): Promise<T> {
   const baseUrl = process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8000';
 
@@ -7,7 +9,6 @@ export async function get<T>(path: string, params?: Record<string, string>): Pro
 
   let url = `${baseUrl}${path}`;
 
-  // Build query string if params are provided
   if (params && Object.keys(params).length > 0) {
     const queryString = new URLSearchParams(params).toString();
     url += `?${queryString}`;
@@ -20,4 +21,26 @@ export async function get<T>(path: string, params?: Record<string, string>): Pro
   }
 
   return response.json();
+}
+
+export async function getFactCheck(req: FactCheckRequest): Promise<FactCheckResult> {
+  const baseUrl = process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8000';
+
+  if (!baseUrl) {
+    throw new Error('REACT_APP_API_BASE_URL environment variable is not set');
+  }
+
+  const response = await fetch(`${baseUrl}/factcheck`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(req),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch fact checks');
+  }
+
+  return response.json() as Promise<FactCheckResult>;
 }
