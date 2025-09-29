@@ -29,11 +29,12 @@ TheBiasLens consists of two main components:
 - **Sources & Citations**: Primary source plus up to 5 referenced links deduped by host
 - **UX Polishing**: Clear (X) button on URL input, subtle skeletons for actions/sources, footer disclaimer
 - **Share Image**: Download analysis as 1200x630 PNG for clean social media sharing without server OG tags
+- **Fact-Check Integration**: Comprehensive fact-checking with Google Fact Check Tools API, multi-pass search strategy, and similarity scoring
+- **Professional Fact-Check UI**: Dynamic relation levels, verdict visualization, and source attribution with clickable links
 
 ### Planned Features 🚧
 
 - **Bias ML Model**: Implementation of the political framing detection algorithm
-- **Fact-check Integration**: Surface fact-check snippets with citations
 - **User Preferences**: Saved searches and bookmarks
 - **Historical Analysis**: Track bias trends over time
 
@@ -112,11 +113,12 @@ thebiaslens/
 - Sources & Citations section on Analyze page
 - Deterministic analysis ids and canonical URL detection
 - Share Image feature with HTML2Canvas rendering for social media sharing
+- Comprehensive fact-check system with multi-pass search and similarity scoring
+- Professional fact-check UI with dynamic relation levels and verdict visualization
 
 🚧 **In Progress**:
 
 - Bias detection ML model integration
-- Fact-checking integration
 - Enhanced UI/UX improvements
 
 🔮 **Future Plans**:

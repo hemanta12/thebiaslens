@@ -11,6 +11,7 @@ FastAPI backend for news search, article extraction, and content analysis with c
 - **Text Summarization**: `POST /summarize` — create lead-3 summaries from article text
 - **Combined Analysis**: `GET /analyze/url` — extract, summarize, and perform bias analysis in a single request
 - **Bias Analysis**: Schema support for Left/Neutral/Right political framing with confidence scores
+- **Fact-Check Integration**: `GET /factcheck` — comprehensive fact-checking with Google Fact Check Tools API
 - **Health Check**: `/health` — service status and version information
 
 ### Technical Features
@@ -22,6 +23,7 @@ FastAPI backend for news search, article extraction, and content analysis with c
 - **Mock Data Fallback**: Automatic fallback when API keys not configured for seamless development
 - **CORS Support**: Ready for frontend integration with configurable origins
 - **In-Memory Caching**: 60-second cache for improved performance (will migrate to Upstash TTL)
+- **Fact-Check System**: Multi-pass search strategy with dynamic query building and similarity scoring
 - **Error Handling**: Comprehensive error responses with detailed messages
 
 ## Installation
@@ -268,15 +270,87 @@ Notes:
 - If the `url` canonicalizes to an id different from the path parameter, the API responds with `400`.
 - This provides a stable route for the frontend without a database.
 
+### GET `/factcheck`
+
+Comprehensive fact-checking using Google Fact Check Tools API with multi-pass search strategy and similarity scoring.
+
+**Parameters:**
+
+- `headline` (required): Article headline to fact-check
+- `summary` (optional): Article summary for additional context
+
+**Example Request:**
+
+```
+GET /factcheck?headline=Climate%20change%20causes%20extreme%20weather&summary=New%20study%20shows%20link
+```
+
+**Response:**
+
+```json
+{
+  "items": [
+    {
+      "text": "Climate change increases extreme weather frequency",
+      "claimant": "Climate Scientists",
+      "claimDate": "2023-09-15",
+      "publisher": {
+        "name": "Climate Fact Check",
+        "site": "climatefactcheck.org"
+      },
+      "claimReview": [
+        {
+          "publisher": {
+            "name": "Scientific Review Board",
+            "site": "sciencereview.org"
+          },
+          "url": "https://sciencereview.org/climate-facts/123",
+          "title": "Climate Change and Extreme Weather: What the Science Says",
+          "reviewDate": "2023-09-20",
+          "textualRating": "True",
+          "languageCode": "en"
+        }
+      ],
+      "relationToQuery": "high",
+      "similarity": 0.85
+    }
+  ],
+  "searchPerformed": true,
+  "totalResults": 1,
+  "searchMetadata": {
+    "queriesUsed": [
+      "Climate change causes extreme weather",
+      "extreme weather climate change"
+    ],
+    "strategy": "multi-pass"
+  }
+}
+```
+
+**Features:**
+
+- **Multi-pass Search**: Uses multiple query strategies to find relevant fact-checks
+- **Similarity Scoring**: Ranks results by relevance using multiple algorithms (Jaccard, Cosine, Levenshtein)
+- **Dynamic Query Building**: Extracts key phrases and entities from headlines and summaries
+- **Relation Levels**: `high`, `medium`, `low` based on similarity scores
+- **Caching**: Results cached for 5 minutes to improve performance
+
 ## Architecture
 
 ```
 api/
 ├── main.py              # FastAPI app, routes, and middleware
 ├── config.py            # Pydantic settings and environment management
-├── providers/           # News provider implementations
+├── providers/           # News and fact-check provider implementations
 │   ├── __init__.py     # Provider interface and factory
-│   └── newsapi.py      # NewsAPI provider implementation
+│   ├── newsapi.py      # NewsAPI provider implementation
+│   └── factcheck_google.py # Google Fact Check Tools provider
+├── services/           # Core business logic services
+│   ├── extract.py      # Article extraction service
+│   ├── summarize.py    # Text summarization service
+│   ├── factcheck_service.py # Main fact-check orchestration
+│   ├── factcheck_query.py   # Dynamic query building system
+│   └── similarity.py   # Similarity scoring algorithms
 ├── data/               # Mock data for development
 │   └── mock_results.py # Sample articles and responses
 ├── requirements.txt    # Python dependencies
@@ -317,11 +391,13 @@ api/
 - **Bias Analysis Schema**: Complete Pydantic models for bias detection results
 - **Combined Analysis Endpoint**: Ready for ML model integration
 - **Score Standardization**: Normalized -1 to 1 scoring system
+- **Comprehensive Fact-Check System**: Multi-pass search with Google Fact Check Tools API
+- **Similarity Scoring**: Multiple algorithms (Jaccard, Cosine, Levenshtein) for relevance ranking
+- **Dynamic Query Building**: Intelligent extraction of key phrases and entities
 
 🚧 **Planned Features**:
 
 - **Bias ML Model**: Political framing analysis model implementation
-- **Fact-Checking**: Integration with fact-checking services
 - **Advanced Caching**: Redis/Upstash for distributed caching
 - **Rate Limiting**: Request throttling and quotas
 - **Authentication**: API key management for different usage tiers
