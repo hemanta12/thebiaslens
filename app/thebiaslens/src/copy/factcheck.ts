@@ -27,26 +27,32 @@ export const FACTCHECK_COPY = {
   actionsLabel: 'Actions:',
   matchedPhrasesLabel: 'Matched phrases:',
 
-  // Match reason labels (for relation badges) - Only 3 categories based on match percentage:
-  // >75%: Highly related, 30-75%: Moderately related, <30%: Somewhat related
+  // Match reason labels (for relation badges) - Updated for new backend
   matchReasons: {
+    // New backend match reason mappings
+    core_claim: 'Matches the core claim',
+    claim_target: 'Matches key entities mentioned',
+    headline_exact: 'Matches the headline phrasing',
+    headline_keyphrase: 'Similar to headline topics',
+    summary_keyphrase: 'Similar to summary topics',
+    target_keyphrase: 'Matches entities and topics',
+    headline_word_pair: 'Similar claim on the same topic',
+    // Legacy fallback mappings
+    headline_plain: 'Similar to the headline',
+    headline_domain: 'Similar claim for this topic',
+    summary_claim_exact: 'Matches a key claim from the summary',
+    summary_claim_terms: 'Similar claim using summary terms',
+    summary_keyphrases: 'Similar claim based on summary keyphrases',
+    summary_entities: 'Similar claim mentioning summary entities',
+    keyphrases: 'Similar claim on the same topic',
+    entities: 'Similar claim on the same topic',
+    short_prefix: 'Similar claim on the same topic',
     highly_related: 'Highly related',
     moderately_related: 'Moderately related',
     somewhat_related: 'Somewhat related',
-    // Legacy fallback mappings
-    headline_exact: 'Highly related',
-    headline_plain: 'Moderately related',
-    headline_domain: 'Somewhat related',
-    summary_claim_exact: 'Highly related',
-    summary_claim_terms: 'Highly related',
-    summary_keyphrases: 'Moderately related',
-    summary_entities: 'Moderately related',
-    keyphrases: 'Somewhat related',
-    entities: 'Moderately related',
-    short_prefix: 'Somewhat related',
-    headline: 'Highly related',
-    headlineDomain: 'Somewhat related',
-    keywords: 'Somewhat related',
+    headline: 'Matches the headline phrasing',
+    headlineDomain: 'Similar claim for this topic',
+    keywords: 'Similar claim on the same topic',
   },
 
   // Verdict guidance
@@ -69,7 +75,15 @@ export const FACTCHECK_COPY = {
 } as const;
 
 export type MatchReason =
+  // New backend match reasons
+  | 'core_claim'
+  | 'claim_target'
   | 'headline_exact'
+  | 'headline_keyphrase'
+  | 'summary_keyphrase'
+  | 'target_keyphrase'
+  | 'headline_word_pair'
+  // Legacy support
   | 'headline_plain'
   | 'headline_domain'
   | 'summary_claim_exact'
@@ -79,7 +93,9 @@ export type MatchReason =
   | 'keyphrases'
   | 'entities'
   | 'short_prefix'
-  // Legacy support
+  | 'highly_related'
+  | 'moderately_related'
+  | 'somewhat_related'
   | 'headline'
   | 'headlineDomain'
   | 'keywords';
