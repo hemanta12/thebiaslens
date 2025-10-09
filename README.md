@@ -29,8 +29,12 @@ TheBiasLens consists of two main components:
 - **Sources & Citations**: Primary source plus up to 5 referenced links deduped by host
 - **UX Polishing**: Clear (X) button on URL input, subtle skeletons for actions/sources, footer disclaimer
 - **Share Image**: Download analysis as 1200x630 PNG for clean social media sharing without server OG tags
-- **Fact-Check Integration**: Comprehensive fact-checking with Google Fact Check Tools API, multi-pass search strategy, and similarity scoring
-- **Professional Fact-Check UI**: Dynamic relation levels, verdict visualization, and source attribution with clickable links
+- **Advanced Fact-Check System**: Type-aware claim mining with policy, statistics, causal, and factoid classification
+- **Intelligent Query Planning**: Multi-pass search strategy with deduplication and semantic expansion
+- **Professional Scoring Engine**: Multi-algorithm similarity scoring with type bonuses and distractor penalties
+- **Publisher Deduplication**: Quality control with highest-scoring results per source
+- **Recency Controls**: Configurable date filtering with intelligent defaults (12-18 months)
+- **Comprehensive UI**: Dynamic verdict chips, relation levels, and source attribution with clickable links
 
 ### Planned Features 🚧
 
@@ -113,8 +117,12 @@ thebiaslens/
 - Sources & Citations section on Analyze page
 - Deterministic analysis ids and canonical URL detection
 - Share Image feature with HTML2Canvas rendering for social media sharing
-- Comprehensive fact-check system with multi-pass search and similarity scoring
-- Professional fact-check UI with dynamic relation levels and verdict visualization
+- Advanced fact-check architecture with type-aware claim mining and classification
+- Intelligent query planning with semantic expansion and deduplication logic
+- Multi-algorithm scoring engine with type bonuses and quality penalties
+- Publisher deduplication and recency filtering for enhanced quality control
+- Professional fact-check UI with verdict chips, relation levels, and source attribution
+- Comprehensive testing infrastructure for backend quality assurance
 
 🚧 **In Progress**:
 

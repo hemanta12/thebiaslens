@@ -1,7 +1,7 @@
-"""Google Fact Check Tools API integration."""
-
 import asyncio
 import aiohttp
+import re
+from datetime import datetime
 from typing import List, Optional
 from urllib.parse import quote_plus
 
@@ -10,25 +10,47 @@ from config import settings
 
 
 # Normalize verdict labels from various fact-checking organizations
-NORMALIZED_VERDICT_MAP = {
+VERDICT_MAP = {
     "true": "True",
-    "mostly true": "True", 
+    "mostly true": "Mostly True",
+    "half true": "Mixed/Needs Context",
+    "mixture": "Mixed/Needs Context",
+    "missing context": "Mixed/Needs Context",
+    "misleading": "Misleading",
     "false": "False",
     "mostly false": "False",
-    "mixture": "Mixed",
-    "half true": "Mixed",
-    "unverified": "Unverified",
-    "unknown": "Unknown"
+    "unverified": "Unverified/Unsupported",
+    "unsupported": "Unverified/Unsupported",
+    "opinion": "Opinion/Analysis",
+    "analysis": "Opinion/Analysis",
+    "satire": "Satire/Parody",
+    "parody": "Satire/Parody",
 }
 
 
 def normalize_verdict(text: Optional[str]) -> Optional[str]:
-    """Normalize verdict text to standard labels."""
     if not text:
+        return "Unverified/Unsupported"
+    
+    # Lowercase and strip punctuation before lookup
+    normalized = re.sub(r'[^\w\s]', '', text.lower().strip())
+    return VERDICT_MAP.get(normalized, "Unverified/Unsupported")
+
+
+def parse_published_date(date_str: Optional[str]) -> Optional[datetime]:
+    """Parse publication date from ISO string if available."""
+    if not date_str:
         return None
     
-    normalized = text.lower().strip()
-    return NORMALIZED_VERDICT_MAP.get(normalized, text.title())
+    try:
+        # Handle ISO format dates
+        if 'T' in date_str:
+            return datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+        else:
+            # Handle date-only format
+            return datetime.fromisoformat(date_str)
+    except (ValueError, TypeError):
+        return None
 
 
 async def fetch_claims(
@@ -93,12 +115,11 @@ async def fetch_claims(
                     source = publisher.get("name", "").strip() or None
                     review_url = review.get("url", "").strip() or None
                     
-                    # Extract publication date from claimDate or reviewDate
+                    # Extract and parse publication date from claimDate or reviewDate
                     published_at = None
-                    if claim.get("claimDate"):
-                        published_at = claim.get("claimDate")
-                    elif review.get("datePublished"):
-                        published_at = review.get("datePublished")
+                    date_str = claim.get("claimDate") or review.get("datePublished")
+                    if date_str:
+                        published_at = parse_published_date(date_str)
                     
                     items.append(FactCheckItem(
                         claim=claim_text,

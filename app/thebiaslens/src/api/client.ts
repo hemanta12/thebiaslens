@@ -35,7 +35,12 @@ export async function getFactCheck(req: FactCheckRequest): Promise<FactCheckResu
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(req),
+    body: JSON.stringify({
+      headline: req.headline,
+      sourceDomain: req.sourceDomain,
+      summary: req.summary,
+      maxAgeMonths: req.maxAgeMonths || 18,
+    }),
   });
 
   if (!response.ok) {

@@ -2,7 +2,6 @@ import re
 from typing import List, Dict, Any
 
 def summarize_lead3(text: str, max_sentences: int = 3, max_chars: int = 600) -> Dict[str, Any]:
-    """Generates a simple lead-based summary from the given text."""
     if not text or not text.strip():
         return {"sentences": [], "joined": "", "charCount": 0, "wordCount": 0}
 

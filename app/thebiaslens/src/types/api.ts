@@ -47,6 +47,7 @@ export type FactCheckRequest = {
   headline: string;
   sourceDomain?: string;
   summary?: string;
+  maxAgeMonths?: number;
 };
 
 export type FactCheckItem = {
@@ -57,7 +58,7 @@ export type FactCheckItem = {
   url?: string | null;
   matchReason?: string;
   publishedAt?: string | null;
-  similarityPercentage?: number;
+  similarity?: number | null;
 };
 
 export type FactCheckResult = {

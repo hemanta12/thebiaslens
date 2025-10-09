@@ -1,6 +1,3 @@
-"""
-NewsAPI provider for fetching news articles.
-"""
 import requests
 from typing import Dict, List, Optional
 from fastapi import HTTPException
@@ -9,20 +6,6 @@ from config import settings
 
 
 def search_news(q: str, page: int, page_size: int) -> Dict:
-    """
-    Search for news articles using NewsAPI.
-    
-    Args:
-        q: Search query
-        page: Page number (1-based)
-        page_size: Number of articles per page
-        
-    Returns:
-        Dictionary containing articles and pagination info
-        
-    Raises:
-        HTTPException: If the provider is down or returns an error
-    """
     if not settings.news_api_key:
         raise HTTPException(
             status_code=500, 

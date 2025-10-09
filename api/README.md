@@ -11,7 +11,7 @@ FastAPI backend for news search, article extraction, and content analysis with c
 - **Text Summarization**: `POST /summarize` — create lead-3 summaries from article text
 - **Combined Analysis**: `GET /analyze/url` — extract, summarize, and perform bias analysis in a single request
 - **Bias Analysis**: Schema support for Left/Neutral/Right political framing with confidence scores
-- **Fact-Check Integration**: `GET /factcheck` — comprehensive fact-checking with Google Fact Check Tools API
+- **Advanced Fact-Check System**: `GET /factcheck` — type-aware claim mining, intelligent query planning, and sophisticated scoring
 - **Health Check**: `/health` — service status and version information
 
 ### Technical Features
@@ -23,7 +23,11 @@ FastAPI backend for news search, article extraction, and content analysis with c
 - **Mock Data Fallback**: Automatic fallback when API keys not configured for seamless development
 - **CORS Support**: Ready for frontend integration with configurable origins
 - **In-Memory Caching**: 60-second cache for improved performance (will migrate to Upstash TTL)
-- **Fact-Check System**: Multi-pass search strategy with dynamic query building and similarity scoring
+- **Type-Aware Processing**: Claim classification system for policy, statistics, causal, and factoid content
+- **Intelligent Query Planning**: Multi-pass search with semantic expansion and deduplication logic
+- **Advanced Scoring Engine**: Multi-algorithm similarity scoring with type bonuses and quality penalties
+- **Publisher Deduplication**: Quality control keeping highest-scoring results per source
+- **Recency Filtering**: Configurable date controls with intelligent defaults (12-18 months)
 - **Error Handling**: Comprehensive error responses with detailed messages
 
 ## Installation
@@ -272,7 +276,7 @@ Notes:
 
 ### GET `/factcheck`
 
-Comprehensive fact-checking using Google Fact Check Tools API with multi-pass search strategy and similarity scoring.
+Advanced fact-checking with type-aware claim mining, intelligent query planning, and sophisticated scoring algorithms.
 
 **Parameters:**
 
@@ -329,11 +333,13 @@ GET /factcheck?headline=Climate%20change%20causes%20extreme%20weather&summary=Ne
 
 **Features:**
 
-- **Multi-pass Search**: Uses multiple query strategies to find relevant fact-checks
-- **Similarity Scoring**: Ranks results by relevance using multiple algorithms (Jaccard, Cosine, Levenshtein)
-- **Dynamic Query Building**: Extracts key phrases and entities from headlines and summaries
-- **Relation Levels**: `high`, `medium`, `low` based on similarity scores
-- **Caching**: Results cached for 5 minutes to improve performance
+- **Type-Aware Claim Mining**: Classifies claims as policy, statistics, causal, or factoid with target extraction
+- **Intelligent Query Planning**: Multi-pass search with semantic expansion and smart deduplication
+- **Advanced Scoring Engine**: Multi-algorithm scoring with type bonuses and distractor penalties
+- **Publisher Deduplication**: Quality control keeping highest-scoring results per source
+- **Recency Filtering**: Configurable date controls with intelligent defaults
+- **Relation Levels**: `high`, `medium`, `low` based on sophisticated similarity scores
+- **Performance Optimization**: Caching and early stopping for improved response times
 
 ## Architecture
 
@@ -348,9 +354,12 @@ api/
 ├── services/           # Core business logic services
 │   ├── extract.py      # Article extraction service
 │   ├── summarize.py    # Text summarization service
-│   ├── factcheck_service.py # Main fact-check orchestration
-│   ├── factcheck_query.py   # Dynamic query building system
-│   └── similarity.py   # Similarity scoring algorithms
+│   ├── claims.py       # Advanced claim mining and type classification
+│   ├── factcheck_service.py # Main fact-check orchestration with deduplication
+│   ├── factcheck_query.py   # Intelligent query planning with deduplication
+│   ├── factcheck_filters.py # Type-specific candidate gating system
+│   ├── factcheck_score.py   # Multi-algorithm scoring with type bonuses
+│   └── textutil.py     # Consolidated text processing utilities
 ├── data/               # Mock data for development
 │   └── mock_results.py # Sample articles and responses
 ├── requirements.txt    # Python dependencies
@@ -391,9 +400,11 @@ api/
 - **Bias Analysis Schema**: Complete Pydantic models for bias detection results
 - **Combined Analysis Endpoint**: Ready for ML model integration
 - **Score Standardization**: Normalized -1 to 1 scoring system
-- **Comprehensive Fact-Check System**: Multi-pass search with Google Fact Check Tools API
-- **Similarity Scoring**: Multiple algorithms (Jaccard, Cosine, Levenshtein) for relevance ranking
-- **Dynamic Query Building**: Intelligent extraction of key phrases and entities
+- **Advanced Fact-Check Architecture**: Type-aware claim mining with policy, statistics, causal, and factoid classification
+- **Intelligent Query Planning**: Multi-pass search with semantic expansion and deduplication logic
+- **Sophisticated Scoring Engine**: Multi-algorithm scoring with type bonuses and quality penalties
+- **Publisher Deduplication**: Quality control keeping highest-scoring results per source
+- **Comprehensive Testing**: Unit tests for backend quality assurance and edge case coverage
 
 🚧 **Planned Features**:
 

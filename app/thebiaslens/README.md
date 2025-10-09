@@ -17,7 +17,7 @@ React + TypeScript frontend for news search and content analysis with responsive
 - **Shareable Links**: Clean route `/analyze/:id?url=...` for sharing deterministic analyses
 - **Actions**: Open canonical article, Copy link with feedback, Share via Web Share API
 - **Sources & Citations**: Primary source plus up to 5 referenced links parsed from article text
-- **Fact-Check Integration**: Comprehensive fact-checking with relation levels, verdict visualization, and source attribution
+- **Advanced Fact-Check UI**: Dynamic verdict chips, relation levels, recency controls, and professional source attribution
 
 ### Share Image
 
@@ -163,7 +163,8 @@ REACT_APP_API_BASE_URL=http://127.0.0.1:8000
 - Sources & Citations section
 - Clear (X) control for analysis URL input
 - Accessibility improvements and ARIA support
-- Comprehensive fact-check integration with dynamic relation levels and verdict visualization
+- Advanced fact-check UI with verdict chips, recency controls, and professional source attribution
+- Enhanced user experience with improved loading states and interactive controls
 
 🚧 **Planned**:
 

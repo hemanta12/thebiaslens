@@ -62,7 +62,6 @@ def _set_cache(
 
 
 async def fetch_html(url: str) -> Optional[str]:
-    """Fetch HTML content from URL using httpx."""
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             headers = {
@@ -80,7 +79,6 @@ async def fetch_html(url: str) -> Optional[str]:
 
 
 def extract_text(html: str, url: str) -> Tuple[Optional[str], Optional[str], int]:
-    """Extract text content from HTML using trafilatura."""
     try:
         extracted = trafilatura.extract(
             html,
@@ -188,16 +186,6 @@ def _is_likely_paywalled(html: str, body: Optional[str], wc: int) -> bool:
 
 
 async def extract_article(url: str) -> Tuple[Optional[str], Optional[str], int, str, Optional[str], Optional[str], bool, Optional[str]]:
-    """
-    Extract article content with caching.
-    
-    Args:
-        url: The URL to extract content from
-        
-    Returns:
-        Tuple of (headline, body, word_count, status)
-        Status is one of: 'extracted', 'missing', 'error'
-    """
     # Canonicalize URL for consistent caching
     canonical_url = canonicalize_url(url)
     
