@@ -3,15 +3,6 @@ import re
 
 
 def canonicalize_url(url: str) -> str:
-    """
-    Canonicalize URL by removing tracking parameters and normalizing scheme/host.
-    
-    Args:
-        url: The URL to canonicalize
-        
-    Returns:
-        Canonical URL string
-    """
     # Parse the URL
     parsed = urlparse(url)
     
@@ -54,15 +45,6 @@ def canonicalize_url(url: str) -> str:
 
 
 def infer_source_from_url(url: str) -> str:
-    """
-    Infer source name from URL hostname.
-    
-    Args:
-        url: The URL to extract source from
-        
-    Returns:
-        Source name string
-    """
     try:
         parsed = urlparse(url)
         hostname = parsed.netloc.lower()

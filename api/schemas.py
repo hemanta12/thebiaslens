@@ -5,14 +5,12 @@ from enum import Enum
 
 
 class BiasLabel(str, Enum):
-    """Political bias labels."""
     LEFT = "Left"
     NEUTRAL = "Neutral"
     RIGHT = "Right"
 
 
 class BiasResult(BaseModel):
-    """Bias analysis result."""
     label: BiasLabel
     confidence: float  # [0..1]
     score: float  # [-1..1] where -1 left, 0 neutral, +1 right
@@ -20,7 +18,6 @@ class BiasResult(BaseModel):
 
 
 class ArticleStub(BaseModel):
-    """Basic article information for search results."""
     url: str
     source: str
     publishedAt: Optional[datetime] = None
@@ -29,7 +26,6 @@ class ArticleStub(BaseModel):
 
 
 class ExtractResult(BaseModel):
-    """Full article extraction result with content."""
     url: str
     canonicalUrl: Optional[str] = None
     headline: Optional[str] = None
@@ -43,7 +39,6 @@ class ExtractResult(BaseModel):
 
 
 class SummaryResult(BaseModel):
-    """Summary of article text."""
     sentences: List[str]
     joined: str
     charCount: int
@@ -51,32 +46,29 @@ class SummaryResult(BaseModel):
 
 
 class FactCheckRequest(BaseModel):
-    """Fact check request payload."""
     headline: str
     sourceDomain: Optional[str] = None
     summary: Optional[str] = None
+    maxAgeMonths: Optional[int] = None
 
 
 class FactCheckItem(BaseModel):
-    """Individual fact check result item."""
     claim: str
     verdict: Optional[str] = None
     snippet: Optional[str] = None
-    source: Optional[str] = None
+    source: Optional[str] = None  # publisher
     url: Optional[AnyUrl] = None
+    publishedAt: Optional[datetime] = None
     matchReason: Optional[str] = None
-    publishedAt: Optional[str] = None
-    similarityPercentage: Optional[int] = None
+    similarity: Optional[float] = None  # 0..1 from scoring
 
 
 class FactCheckResult(BaseModel):
-    """Fact check result collection."""
     status: Literal["found", "none"]
     items: List[FactCheckItem] = []
 
 
 class AnalyzeResult(BaseModel):
-    """Combined extraction and summary result."""
     id: str
     canonicalUrl: str
     extract: ExtractResult
